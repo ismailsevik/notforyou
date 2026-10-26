@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Twitter/X Hide For You Tab (Brave)",
+  "version": "1.0.0",
+  "description": "Brave Browser için Twitter/X \"Sana Özel\" (For You) sekmesini tamamen gizler ve Takip Edilenler sekmesine yönlendirir.",
+  "author": "GitHub Community",
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://twitter.com/*",
+        "https://x.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "permissions": []
+}
