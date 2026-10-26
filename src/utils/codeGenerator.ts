@@ -22,7 +22,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'content.js',
       language: 'javascript',
       content: contentJs,
-      description: 'Twitter/X DOM elemanlarını algılayan ve gizleyen ana JavaScript kodu',
+      description: 'Tabbar ve + ikonu dahil üst şeridi gizleyen JavaScript kodu',
       category: 'extension',
     },
     {
@@ -30,7 +30,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'styles.css',
       language: 'css',
       content: stylesCss,
-      description: 'Eski Twitter görünümü sağlayan anti-flicker CSS kuralları',
+      description: 'Tabbar ve + butonunu gizleyen anti-flicker CSS kuralları',
       category: 'extension',
     },
     {
@@ -38,7 +38,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'twitter-hide-foryou.user.js',
       language: 'javascript',
       content: userScriptJs,
-      description: 'Violentmonkey / Tampermonkey eklentisi için tek tıkla kurulan UserScript',
+      description: 'Violentmonkey / Tampermonkey için tek tıkla kurulan UserScript',
       category: 'userscript',
     },
     {
@@ -64,9 +64,9 @@ function generateManifestJson(options: ConfigOptions): string {
   return JSON.stringify(
     {
       manifest_version: 3,
-      name: 'Twitter/X Classic Look & Hide Tabs (Brave)',
-      version: '1.1.0',
-      description: 'Brave Browser için Twitter/X sekmelerini ("Sana Özel" ve "Takip Edilenler") kaldırır ve eski klasik Twitter görünümü sağlar.',
+      name: 'Twitter/X Classic Look & Remove Tabbar with Plus Icon (Brave)',
+      version: '1.2.0',
+      description: 'Brave Browser için Twitter/X sekme barını ve yanındaki + / ayarlar ikonunu tamamen kaldırır.',
       author: 'GitHub Community',
       icons: {
         "16": "icon16.png",
@@ -92,71 +92,37 @@ function generateManifestJson(options: ConfigOptions): string {
 }
 
 function generateContentJs(options: ConfigOptions): string {
-  const targetTexts = [
-    'Sana Özel',
-    'For You',
-    'Para ti',
-    'Für dich',
-    'Pour vous',
-    'おすすめ'
-  ];
-
   return `/**
- * Twitter/X Classic Look & Hide Tabs - Brave Browser Extension
- * Eski Twitter görünümü (Sekmesiz temiz akış)
+ * Twitter/X Classic Look - Hide Tabbar & Plus Icon
+ * Brave Browser Extension
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  const CONFIG = ${JSON.stringify(options, null, 2)};
-  const TARGET_FOR_YOU_TEXTS = ${JSON.stringify(targetTexts)};
+  console.log('[X-Classic-Twitter] Script aktif: Tabbar ve + ikonu kaldırılıyor.');
 
-  console.log('[X-Classic-Twitter] Script aktif.');
-
-  function processTabs() {
+  function processTabsAndPlusIcon() {
+    // 1. Tablist ve onun kapsayıcı üst şeridini (+ ikonu dahil) gizle
     const tabList = document.querySelector('div[role="tablist"]');
-    if (!tabList) return;
-
-    ${options.hideEntireTablist ? `
-    // ESKİ TWITTER GÖRÜNÜMÜ: Tüm üst sekme barını gizle
-    if (tabList.style.display !== 'none') {
-      tabList.style.display = 'none';
-      console.log('[X-Classic-Twitter] Üst sekme barı tamamen kaldırıldı (Eski Twitter Görünümü).');
+    if (tabList) {
+      const parentRow = tabList.parentElement;
+      if (parentRow && parentRow.tagName !== 'BODY') {
+        parentRow.style.display = 'none';
+      } else {
+        tabList.style.display = 'none';
+      }
     }
-    ` : `
-    // Yalnızca "Sana Özel" sekmesini gizle
-    const tabs = tabList.querySelectorAll('a[role="tab"], div[role="tab"]');
-    let forYouTab = null;
-    let followingTab = null;
 
-    tabs.forEach((tab, index) => {
-      const text = (tab.textContent || '').trim();
-      const isForYou = TARGET_FOR_YOU_TEXTS.some(t => text.toLowerCase().includes(t.toLowerCase())) || index === 0;
-      
-      if (isForYou && !forYouTab) {
-        forYouTab = tab;
-      }
-      if (index === 1 || (!isForYou && !followingTab)) {
-        followingTab = tab;
-      }
+    // 2. Yan taraftaki + ikonu / Ayarlar butonunu doğrudan gizle
+    const plusButtons = document.querySelectorAll(
+      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
+    );
+    plusButtons.forEach(btn => {
+      btn.style.display = 'none';
     });
 
-    if (forYouTab && CONFIG.hideForYou) {
-      if (forYouTab.style.display !== 'none') {
-        forYouTab.style.display = 'none';
-      }
-      if (CONFIG.autoSwitchToFollowing && followingTab) {
-        if (forYouTab.getAttribute('aria-selected') === 'true') {
-          followingTab.click();
-        }
-      }
-    }
-    `}
-  }
-
-  function processExtraElements() {
     ${options.hideGrok ? `
     // Grok Sekmesini Gizle
     const grokLink = document.querySelector('a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"]');
@@ -181,16 +147,14 @@ function generateContentJs(options: ConfigOptions): string {
     if (!isThrottled) {
       isThrottled = true;
       requestAnimationFrame(() => {
-        processTabs();
-        processExtraElements();
+        processTabsAndPlusIcon();
         isThrottled = false;
       });
     }
   });
 
   function init() {
-    processTabs();
-    processExtraElements();
+    processTabsAndPlusIcon();
 
     const targetNode = document.body || document.documentElement;
     if (targetNode) {
@@ -211,53 +175,49 @@ function generateContentJs(options: ConfigOptions): string {
 }
 
 function generateStylesCss(options: ConfigOptions): string {
-  let css = `/* Twitter/X Classic Look - Anti-Flicker CSS for Brave Browser */\n\n`;
+  return `/* Twitter/X Classic Look - Remove Tabbar & Plus Icon */
 
-  if (options.hideEntireTablist) {
-    css += `/* ESKİ TWITTER GÖRÜNÜMÜ: Üst sekme barını ("Sana Özel" ve "Takip Edilenler") tamamen kaldır */\n`;
-    css += `div[role="tablist"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  } else if (options.hideForYou) {
-    css += `/* "Sana Özel" (For You) Sekmesini Gizle */\n`;
-    css += `div[role="tablist"] > div[role="presentation"]:first-child,\n`;
-    css += `div[role="tablist"] a[href="/home"][role="tab"]:first-child {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
+/* 1. Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */
+div:has(> div[role="tablist"]),
+div[role="tablist"],
+a[href*="/settings/timeline"],
+div[aria-label*="Timeline settings"],
+div[aria-label*="Zaman akışı"],
+div[aria-label*="Özel akış"] {
+  display: none !important;
+}
 
-  if (options.hideGrok) {
-    css += `/* Grok Sekmesini Gizle */\n`;
-    css += `a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
+${options.hideGrok ? `
+/* Grok Sekmesini Gizle */
+a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"] {
+  display: none !important;
+}
+` : ''}
 
-  if (options.hidePremium) {
-    css += `/* Premium / Premium'a Katıl Butonunu Gizle */\n`;
-    css += `a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
+${options.hidePremium ? `
+/* Premium / Premium'a Katıl Butonunu Gizle */
+a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"] {
+  display: none !important;
+}
+` : ''}
 
-  if (options.hideWhoToFollow) {
-    css += `/* Kimi Takip Etmeli Modülünü Gizle */\n`;
-    css += `aside[aria-label*="Takip"], aside[aria-label*="Who to follow"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
-
-  return css;
+${options.hideWhoToFollow ? `
+/* Kimi Takip Etmeli Modülünü Gizle */
+aside[aria-label*="Takip"], aside[aria-label*="Who to follow"] {
+  display: none !important;
+}
+` : ''}
+`;
 }
 
 function generateUserScriptJs(options: ConfigOptions): string {
   const contentJs = generateContentJs(options);
 
   return `// ==UserScript==
-// @name         Eski Twitter Görünümü - Sekme Barını Gizle (Brave Browser)
+// @name         Twitter/X Tabbar ve + İkonunu Kaldır (Brave Browser)
 // @namespace    https://github.com/
-// @version      1.1.0
-// @description  Brave Browser için Twitter/X 'Sana Özel' ve 'Takip Edilenler' sekmelerini kaldırır, eski temiz Twitter görünümü sağlar.
+// @version      1.2.0
+// @description  Brave Browser için Twitter/X sekme barını ("Sana Özel", "Takip Edilenler") ve yanındaki + ikonunu tamamen kaldırır.
 // @author       GitHub Developer
 // @match        https://twitter.com/*
 // @match        https://x.com/*
@@ -271,19 +231,25 @@ ${contentJs}
 }
 
 function generateBraveShieldsTxt(options: ConfigOptions): string {
-  return `! Title: Eski Twitter Görünümü - Brave Shields Filtre Listesi
+  return `! Title: Twitter/X Tabbar ve + İkonunu Kaldırma - Brave Shields Filtre Listesi
 ! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için içerik filtreleme kuralları.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
-${options.hideEntireTablist ? `! ===================================================================
-! ESKİ TWITTER GÖRÜNÜMÜ: ÜST SEKME BARINI (SANA ÖZEL & TAKİP EDİLENLER) TAMAMEN KALDIR
 ! ===================================================================
+! TABBAR VE YANINDAKİ + İKONUNU DAHİL TÜM ÜST ŞERİDİ GİZLE
+! ===================================================================
+x.com##div:has(> div[role="tablist"])
+twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
-twitter.com##div[role="tablist"]` : `! --- "Sana Özel" Sekmesini Gizle ---
-x.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You/)
-twitter.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You/)`}
+twitter.com##div[role="tablist"]
+x.com##a[href*="/settings/timeline"]
+twitter.com##a[href*="/settings/timeline"]
+x.com##div[aria-label*="Timeline"]
+twitter.com##div[aria-label*="Timeline"]
+x.com##div[aria-label*="Zaman akışı"]
+twitter.com##div[aria-label*="Zaman akışı"]
 
 ${options.hideGrok ? `
 ! --- Grok Sekmesini Gizle ---
@@ -303,49 +269,25 @@ twitter.com##aside[aria-label*="Takip"]` : ''}
 }
 
 function generateReadmeMd(options: ConfigOptions): string {
-  return `# 🚫 Eski Twitter Görünümü - Sekmeleri Gizleme Kodu (Brave Browser)
+  return `# 🚫 Twitter/X Tabbar ve + İkonunu Kaldırma Kodu (Brave Browser)
 
-Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) üzerindeki **"Sana Özel" (For You)** ve **"Takip Edilenler" (Following)** sekmelerini kaldırarak **Eski Klasik Twitter** görünümünü sağlayan eklenti, UserScript ve Brave Shields kuralları.
+Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) üzerindeki **"Sana Özel"**, **"Takip Edilenler"** sekme barını ve yanındaki **+ (Artı / Ayarlar)** ikonunu tamamen kaldırarak **Eski Sade Twitter** görünümünü sağlayan eklenti ve Brave Shields kuralları.
 
 ---
 
 ## 🚀 Özellikler
 
-- ✅ **Eski Klasik Twitter Görünümü:** Üstteki karmaşık sekme barını tamamen gizler.
+- ✅ **Tabbar ve + İkonu Kaldırma:** Sekme barını ve yanındaki ayarlar / + butonunu siler.
 - ✅ **Brave Shields Uyumlu:** Eklentisiz \`brave://adblock\` içerik filtreleme kuralı.
 - ✅ **Grok ve Premium Temizliği:** Sol menüdeki Grok ve reklam butonlarını kaldırır.
 - ✅ **Sıfır Ekran Titremesi:** Anti-flicker CSS ön yükleme.
 
 ---
 
-## 🛠️ Kurulum Yöntemleri (Brave Browser)
-
-### Yöntem 1: Brave Shields İçerik Filtreleme (Kodsuz & Eklentisiz)
+## 🛠️ Kurulum (Brave Browser)
 
 1. Brave adres çubuğuna \`brave://adblock\` yazın.
 2. **Özel Filtreler (Custom Filters)** kutusuna \`brave-shields-rules.txt\` içeriğini yapıştırıp kaydet'e basın.
-
----
-
-### Yöntem 2: Brave Geliştirici Modu ile Yükleme
-
-1. Bu depoyu ZIP olarak indirin veya klonlayın.
-2. Brave'de \`brave://extensions\` sayfasına gidin ve **Geliştirici Modu**'nu açın.
-3. **Paketlenmemiş öge yükle (Load Unpacked)** butonuna basıp bu klasörü seçin.
-
----
-
-## 📁 Proje Yapısı
-
-\`\`\`text
-.
-├── manifest.json       # Manifest V3 eklenti tanımı
-├── content.js          # Sekme kaldırıcı JS
-├── styles.css          # Eski Twitter görünümü sağlayan CSS
-├── twitter-hide-foryou.user.js # UserScript
-├── brave-shields-rules.txt     # Brave Shields kuralı
-└── README.md           # Dokümantasyon
-\`\`\`
 
 **Lisans:** MIT
 `;

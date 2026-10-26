@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ConfigOptions } from '../types';
-import { Eye, EyeOff, Home, Search, Bell, User, Bot, Award, Sparkles } from 'lucide-react';
+import { Eye, EyeOff, Home, Search, Bell, User, Bot, Award, Sparkles, Plus, Settings } from 'lucide-react';
 
 interface TwitterSimulatorProps {
   options: ConfigOptions;
@@ -10,7 +10,8 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
   const [extensionEnabled, setExtensionEnabled] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('following');
 
-  const showEntireTablist = !extensionEnabled || !options.hideEntireTablist;
+  // If extension is enabled, the tabbar and + icon are completely removed
+  const showTabbarAndPlusIcon = !extensionEnabled;
 
   return (
     <div id="simulator" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -36,14 +37,12 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             {extensionEnabled ? (
               <>
                 <EyeOff className="w-3.5 h-3.5" />
-                <span>
-                  {options.hideEntireTablist ? 'Eski Twitter Görünümü (Aktif)' : 'Eklenti AKTİF (Sekme Gizlendi)'}
-                </span>
+                <span>Eklenti AKTİF (Tabbar ve + İkonu Gizli)</span>
               </>
             ) : (
               <>
                 <Eye className="w-3.5 h-3.5" />
-                <span>Orijinal Yeni Twitter Görünümü</span>
+                <span>Varsayılan Twitter (+ İkonu & Sekmeler Var)</span>
               </>
             )}
           </button>
@@ -124,63 +123,63 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             <div className="sticky top-0 bg-black/80 backdrop-blur-md border-b border-slate-800 z-10">
               <div className="px-4 py-3 font-bold text-lg flex items-center justify-between">
                 <span>Anasayfa</span>
-                {extensionEnabled && options.hideEntireTablist && (
-                  <span className="text-xs font-mono text-amber-400 bg-amber-950/60 border border-amber-700/50 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                    Eski Twitter Görünümü
+                {!showTabbarAndPlusIcon && (
+                  <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-700/50 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                    Tabbar ve + İkonu Kaldırıldı
                   </span>
                 )}
               </div>
 
-              {/* TAB BAR HEADER: HIDE ENTIRELY IF CLASSIC LOOK IS ENABLED */}
-              {showEntireTablist ? (
-                <div className="flex border-t border-slate-800/80 font-medium text-sm">
-                  {(!extensionEnabled || !options.hideForYou) && (
-                    <button
-                      onClick={() => setActiveTab('foryou')}
-                      className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                        activeTab === 'foryou' ? 'text-white font-bold' : 'text-slate-500'
-                      }`}
-                    >
-                      <span>Sana Özel</span>
-                      {activeTab === 'foryou' && (
-                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
-                      )}
-                    </button>
-                  )}
+              {/* TAB BAR HEADER + PLUS ICON: SHOW ONLY WHEN EXTENSION IS OFF */}
+              {showTabbarAndPlusIcon ? (
+                <div className="flex items-center border-t border-slate-800/80 font-medium text-sm">
+                  <button
+                    onClick={() => setActiveTab('foryou')}
+                    className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
+                      activeTab === 'foryou' ? 'text-white font-bold' : 'text-slate-500'
+                    }`}
+                  >
+                    <span>Sana Özel</span>
+                    {activeTab === 'foryou' && (
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+                    )}
+                  </button>
 
                   <button
                     onClick={() => setActiveTab('following')}
                     className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                      activeTab === 'following' || options.hideForYou ? 'text-white font-bold' : 'text-slate-500'
+                      activeTab === 'following' ? 'text-white font-bold' : 'text-slate-500'
                     }`}
                   >
                     <span>Takip Edilenler</span>
-                    {(activeTab === 'following' || options.hideForYou) && (
+                    {activeTab === 'following' && (
                       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-sky-500 rounded-full" />
                     )}
                   </button>
+
+                  {/* The + Icon / Timeline settings button */}
+                  <div className="px-3 py-2 text-slate-400 hover:text-white cursor-pointer flex items-center gap-1 hover:bg-slate-900 rounded-full">
+                    <Plus className="w-5 h-5 text-slate-300" />
+                  </div>
                 </div>
               ) : (
-                <div className="px-4 py-2 bg-amber-950/20 border-t border-amber-900/30 text-center font-mono text-xs text-amber-300">
-                  ⚡ Üst sekme barı kaldırıldı ("Sana Özel" & "Takip Edilenler" sekmeleri gizli)
+                <div className="px-4 py-2 bg-emerald-950/20 border-t border-emerald-900/30 text-center font-mono text-xs text-emerald-300 flex items-center justify-center gap-2">
+                  <EyeOff className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Üst sekme barı ve + ikonu tamamen kaldırıldı</span>
                 </div>
               )}
             </div>
 
             {/* Feed Content */}
             <div className="divide-y divide-slate-800">
-              
               <div className="p-3 bg-slate-950 text-xs text-slate-400 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
                   <span>
-                    Akış Modu: <strong>{extensionEnabled && options.hideEntireTablist ? 'Sade Klasik Akış (Sekmesiz)' : 'Sadece Takip Edilenler'}</strong>
+                    Akış Modu: <strong>{!showTabbarAndPlusIcon ? 'Temiz Sekmesiz Akış' : 'Varsayılan Tabbar'}</strong>
                   </span>
                 </div>
-                <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
-                  Temiz Görünüm
-                </span>
               </div>
 
               {/* Tweet 1 */}
@@ -194,7 +193,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                     <span className="text-slate-500">@techbrave · 12dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    Eski Twitter görünümü sayesinde artık üst tarafta gereksiz sekme barı ("Sana Özel" ve "Takip Edilenler") bulunmuyor! 🚀
+                    Artık hem "Sana Özel / Takip Edilenler" sekme barı hem de yanındaki + ikonu tamamen temizlendi! 🚀
                   </p>
                 </div>
               </div>
@@ -210,7 +209,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                     <span className="text-slate-500">@oss_community · 45dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    Brave Shields kuralı veya eklenti ile Twitter/X ana sayfanızı tamamen sadeleştirebilirsiniz.
+                    Brave Shields kuralı ile eklenti kurmaya bile gerek kalmadan üst şeridi kaldırabilirsiniz.
                   </p>
                 </div>
               </div>

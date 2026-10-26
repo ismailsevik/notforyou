@@ -1,34 +1,40 @@
 /**
- * Twitter/X Classic Look & Hide Tabs - Brave Browser Extension & UserScript
- * Eski Twitter görünümü (Sekmesiz temiz akış)
+ * Twitter/X Classic Look - Hide Tabbar & Plus Icon
+ * Brave Browser Extension & UserScript
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Classic-Twitter] Script aktif.');
+  console.log('[X-Classic-Twitter] Script aktif: Tabbar ve + ikonu kaldırılıyor.');
 
-  // Üst sekme barını ("Sana Özel" ve "Takip Edilenler") tamamen kaldır
-  function processTabs() {
+  function processTabsAndPlusIcon() {
+    // 1. Tablist ve onun kapsayıcı üst şeridini (+ ikonu dahil) gizle
     const tabList = document.querySelector('div[role="tablist"]');
     if (tabList) {
-      if (tabList.style.display !== 'none') {
+      const parentRow = tabList.parentElement;
+      if (parentRow && parentRow.tagName !== 'BODY') {
+        parentRow.style.display = 'none';
+      } else {
         tabList.style.display = 'none';
       }
     }
-  }
 
-  // Ekstra Temizlik Kuralları (Grok, Premium, Kimi Takip Etmeli)
-  function processExtraElements() {
+    // 2. Yan taraftaki + ikonu / Ayarlar butonunu doğrudan gizle
+    const plusButtons = document.querySelectorAll(
+      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
+    );
+    plusButtons.forEach(btn => {
+      btn.style.display = 'none';
+    });
+
+    // 3. Grok ve Premium gizle
     const grokLink = document.querySelector('a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"]');
     if (grokLink) grokLink.style.display = 'none';
 
     const premiumLink = document.querySelector('a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"]');
     if (premiumLink) premiumLink.style.display = 'none';
-
-    const whoToFollow = document.querySelector('aside[aria-label*="Takip"], aside[aria-label*="Who to follow"]');
-    if (whoToFollow) whoToFollow.style.display = 'none';
   }
 
   let isThrottled = false;
@@ -36,16 +42,14 @@
     if (!isThrottled) {
       isThrottled = true;
       requestAnimationFrame(() => {
-        processTabs();
-        processExtraElements();
+        processTabsAndPlusIcon();
         isThrottled = false;
       });
     }
   });
 
   function init() {
-    processTabs();
-    processExtraElements();
+    processTabsAndPlusIcon();
 
     const targetNode = document.body || document.documentElement;
     if (targetNode) {

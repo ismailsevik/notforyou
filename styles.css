@@ -1,7 +1,12 @@
-/* Twitter/X Classic Look - Anti-Flicker CSS for Brave Browser */
+/* Twitter/X Classic Look - Remove Tabbar & Plus Icon */
 
-/* ESKİ TWITTER GÖRÜNÜMÜ: Üst sekme barını ("Sana Özel" ve "Takip Edilenler") tamamen kaldır */
-div[role="tablist"] {
+/* Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */
+div:has(> div[role="tablist"]),
+div[role="tablist"],
+a[href*="/settings/timeline"],
+div[aria-label*="Timeline settings"],
+div[aria-label*="Zaman akışı"],
+div[aria-label*="Özel akış"] {
   display: none !important;
 }
 

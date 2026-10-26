@@ -1,14 +1,22 @@
-! Title: Eski Twitter Görünümü - Brave Shields Filtre Listesi
+! Title: Twitter/X Tabbar ve + İkonunu Kaldırma - Brave Shields Filtre Listesi
 ! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme kuralları.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! ESKİ TWITTER GÖRÜNÜMÜ: ÜST SEKME BARINI ("SANA ÖZEL" & "TAKİP EDİLENLER") TAMAMEN KALDIR
+! TABBAR VE YANINDAKİ + İKONU DAHİL TÜM ÜST ŞERİDİ GİZLE
 ! ===================================================================
+x.com##div:has(> div[role="tablist"])
+twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
 twitter.com##div[role="tablist"]
+x.com##a[href*="/settings/timeline"]
+twitter.com##a[href*="/settings/timeline"]
+x.com##div[aria-label*="Timeline"]
+twitter.com##div[aria-label*="Timeline"]
+x.com##div[aria-label*="Zaman akışı"]
+twitter.com##div[aria-label*="Zaman akışı"]
 
 ! ===================================================================
 ! GROK AI VE PREMIUM SEKMELERİNİ GİZLE
