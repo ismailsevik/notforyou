@@ -1,34 +1,33 @@
-/* Twitter/X Classic Look - Remove Tabbar, Plus Icon & Promoted Tweets */
+/* Twitter/X Minimalist Layout - Anti-Flicker CSS for Brave Browser */
 
-/* 1. Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */
+/* 1. ÜST TABBAR, + İKONU VE ABONE OL BUTONUNU KALDIR */
 div:has(> div[role="tablist"]),
 div[role="tablist"],
+a[href*="premium_tier_upsell"],
+a[href*="subscribe"],
 a[href*="/settings/timeline"],
 div[aria-label*="Timeline settings"],
 div[aria-label*="Zaman akışı"],
-div[aria-label*="Özel akış"] {
+div[aria-label*="Özel akış"],
+div[aria-label*="Pin"] {
   display: none !important;
 }
 
-/* 2. Sponsorlu / Reklam Tweetlerini Gizle (Promoted Tweets) */
+/* 2. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
+a[data-testid="AppTabBar_Grok_Link"],
+a[href="/i/grok"],
+a[data-testid="AppTabBar_Premium_Link"],
+a[href*="/premium"],
+a[href*="/communities"],
+a[href*="/verified-orgs"],
+a[href*="/i/jobs"] {
+  display: none !important;
+}
+
+/* 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE */
 article:has(span:has-text("Sponsorlu")),
 article:has(span:has-text("Promoted")),
 article:has(a[href*="/quick_promote"]),
 div[data-testid="placementTracking"] {
-  display: none !important;
-}
-
-/* Grok Sekmesini Gizle */
-a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"] {
-  display: none !important;
-}
-
-/* Premium / Premium'a Katıl Butonunu Gizle */
-a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"] {
-  display: none !important;
-}
-
-/* Kimi Takip Etmeli Modülünü Gizle */
-aside[aria-label*="Takip"], aside[aria-label*="Who to follow"] {
   display: none !important;
 }

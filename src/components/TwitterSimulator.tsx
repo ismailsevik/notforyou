@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ConfigOptions } from '../types';
-import { Eye, EyeOff, Home, Search, Bell, User, Bot, Award, Sparkles, Plus, Settings } from 'lucide-react';
+import { Eye, EyeOff, Home, Bookmark, Settings, User, LogOut, Sparkles, ShieldCheck } from 'lucide-react';
 
 interface TwitterSimulatorProps {
   options: ConfigOptions;
@@ -8,10 +8,6 @@ interface TwitterSimulatorProps {
 
 export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) => {
   const [extensionEnabled, setExtensionEnabled] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('following');
-
-  // If extension is enabled, the tabbar and + icon are completely removed
-  const showTabbarAndPlusIcon = !extensionEnabled;
 
   return (
     <div id="simulator" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -21,7 +17,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
           <div className="w-3 h-3 rounded-full bg-red-500/80"></div>
           <div className="w-3 h-3 rounded-full bg-yellow-500/80"></div>
           <div className="w-3 h-3 rounded-full bg-green-500/80"></div>
-          <span className="ml-2 text-xs font-mono text-slate-400">Canlı Önizleme: Twitter / X (x.com/home)</span>
+          <span className="ml-2 text-xs font-mono text-slate-400">Canlı Önizleme: Özel Sadeleştirilmiş Twitter (x.com)</span>
         </div>
 
         <div className="flex items-center gap-3">
@@ -37,12 +33,12 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             {extensionEnabled ? (
               <>
                 <EyeOff className="w-3.5 h-3.5" />
-                <span>Eklenti AKTİF (Tabbar ve + İkonu Gizli)</span>
+                <span>Eklenti AKTİF (Özel Sade Menü & Sekmesiz)</span>
               </>
             ) : (
               <>
                 <Eye className="w-3.5 h-3.5" />
-                <span>Varsayılan Twitter (+ İkonu & Sekmeler Var)</span>
+                <span>Orijinal Karmaşık Menü (Tüm Butonlar)</span>
               </>
             )}
           </button>
@@ -50,10 +46,10 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
       </div>
 
       {/* Twitter App View Mockup */}
-      <div className="bg-black text-slate-100 min-h-[500px] flex justify-center text-sm font-sans">
-        <div className="w-full max-w-5xl flex border-x border-slate-800 min-h-[500px]">
+      <div className="bg-black text-slate-100 min-h-[520px] flex justify-center text-sm font-sans">
+        <div className="w-full max-w-5xl flex border-x border-slate-800 min-h-[520px]">
           
-          {/* Left Navigation Bar */}
+          {/* Left Navigation Bar - SADECE PROFİL, KAYDEDİLENLER, AYARLAR, ÇIKIŞ */}
           <div className="w-16 sm:w-60 border-r border-slate-800 p-3 flex flex-col justify-between shrink-0">
             <div className="space-y-2">
               <div className="p-2 text-white font-bold text-xl hover:bg-slate-900 rounded-full w-fit">
@@ -65,108 +61,78 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                   <Home className="w-6 h-6" />
                   <span className="hidden sm:inline">Anasayfa</span>
                 </div>
-                <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
-                  <Search className="w-6 h-6" />
-                  <span className="hidden sm:inline">Keşfet</span>
-                </div>
-                <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
-                  <Bell className="w-6 h-6" />
-                  <span className="hidden sm:inline">Bildirimler</span>
-                </div>
 
-                {/* Grok Item */}
-                {(!extensionEnabled || !options.hideGrok) ? (
-                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
-                    <Bot className="w-6 h-6 text-sky-400" />
-                    <span className="hidden sm:inline">Grok</span>
-                  </div>
-                ) : (
-                  <div className="hidden sm:block p-2 text-[10px] text-orange-400/60 font-mono italic border border-dashed border-orange-500/20 rounded">
-                    [Grok gizlendi]
-                  </div>
-                )}
-
-                {/* Premium Item */}
-                {(!extensionEnabled || !options.hidePremium) ? (
-                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
-                    <Award className="w-6 h-6 text-amber-400" />
-                    <span className="hidden sm:inline">Premium</span>
-                  </div>
-                ) : (
-                  <div className="hidden sm:block p-2 text-[10px] text-orange-400/60 font-mono italic border border-dashed border-orange-500/20 rounded">
-                    [Premium gizlendi]
-                  </div>
-                )}
-
-                <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
-                  <User className="w-6 h-6" />
+                {/* Profil */}
+                <div className="flex items-center gap-4 p-3 font-semibold hover:bg-slate-900 rounded-full text-slate-200 hover:text-white cursor-pointer">
+                  <User className="w-6 h-6 text-sky-400" />
                   <span className="hidden sm:inline">Profil</span>
                 </div>
+
+                {/* Kaydedilenler */}
+                <div className="flex items-center gap-4 p-3 font-semibold hover:bg-slate-900 rounded-full text-slate-200 hover:text-white cursor-pointer">
+                  <Bookmark className="w-6 h-6 text-amber-400" />
+                  <span className="hidden sm:inline">Kaydedilenler</span>
+                </div>
+
+                {/* Ayarlar */}
+                <div className="flex items-center gap-4 p-3 font-semibold hover:bg-slate-900 rounded-full text-slate-200 hover:text-white cursor-pointer">
+                  <Settings className="w-6 h-6 text-slate-400" />
+                  <span className="hidden sm:inline">Ayarlar</span>
+                </div>
+
+                {/* Orijinal menüdeki fazla öğeler kapalıyken gizli uyarısı */}
+                {extensionEnabled && (
+                  <div className="hidden sm:block p-2 text-[10px] text-orange-400/70 font-mono italic border border-dashed border-orange-500/20 rounded mt-3">
+                    [Grok, Premium, Keşfet, Topluluklar kaldırıldı]
+                  </div>
+                )}
               </nav>
             </div>
 
-            <div className="p-3 flex items-center gap-3 hover:bg-slate-900 rounded-full cursor-pointer">
-              <div className="w-9 h-9 rounded-full bg-slate-700 flex items-center justify-center font-bold text-xs">
-                BS
+            {/* Account Switcher & Logout */}
+            <div className="p-3 flex items-center justify-between hover:bg-slate-900 rounded-full cursor-pointer border border-slate-800/80">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center font-bold text-xs">
+                  BS
+                </div>
+                <div className="hidden sm:block text-xs">
+                  <div className="font-bold text-white">Brave User</div>
+                  <div className="text-slate-500 text-[11px]">@brave_user</div>
+                </div>
               </div>
-              <div className="hidden sm:block text-xs">
-                <div className="font-bold">Brave User</div>
-                <div className="text-slate-500">@brave_user</div>
-              </div>
+              <LogOut className="w-4 h-4 text-red-400 hover:text-red-300 hidden sm:block" />
             </div>
           </div>
 
           {/* Central Feed Section */}
           <div className="flex-1 min-w-0 border-r border-slate-800 flex flex-col">
             
-            {/* Feed Header */}
+            {/* Feed Header - NO SUBSCRIBE BUTTON, NO TABBAR, NO + ICON */}
             <div className="sticky top-0 bg-black/80 backdrop-blur-md border-b border-slate-800 z-10">
-              <div className="px-4 py-3 font-bold text-lg flex items-center justify-between">
+              <div className="px-4 py-3.5 font-bold text-lg flex items-center justify-between">
                 <span>Anasayfa</span>
-                {!showTabbarAndPlusIcon && (
+                {extensionEnabled ? (
                   <span className="text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-700/50 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                    Tabbar ve + İkonu Kaldırıldı
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    Sekme Barı, + İkonu ve Abone Ol Butonu Gizlendi
                   </span>
+                ) : (
+                  <button className="bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full">
+                    Abone Ol
+                  </button>
                 )}
               </div>
 
-              {/* TAB BAR HEADER + PLUS ICON: SHOW ONLY WHEN EXTENSION IS OFF */}
-              {showTabbarAndPlusIcon ? (
+              {/* TAB BAR AND + ICON REMOVED ENTIRELY WHEN EXTENSION IS ACTIVE */}
+              {!extensionEnabled && (
                 <div className="flex items-center border-t border-slate-800/80 font-medium text-sm">
-                  <button
-                    onClick={() => setActiveTab('foryou')}
-                    className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                      activeTab === 'foryou' ? 'text-white font-bold' : 'text-slate-500'
-                    }`}
-                  >
-                    <span>Sana Özel</span>
-                    {activeTab === 'foryou' && (
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => setActiveTab('following')}
-                    className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                      activeTab === 'following' ? 'text-white font-bold' : 'text-slate-500'
-                    }`}
-                  >
-                    <span>Takip Edilenler</span>
-                    {activeTab === 'following' && (
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-sky-500 rounded-full" />
-                    )}
-                  </button>
-
-                  {/* The + Icon / Timeline settings button */}
-                  <div className="px-3 py-2 text-slate-400 hover:text-white cursor-pointer flex items-center gap-1 hover:bg-slate-900 rounded-full">
-                    <Plus className="w-5 h-5 text-slate-300" />
+                  <div className="flex-1 py-3 text-center text-white font-bold border-b-2 border-sky-500">
+                    Sana Özel
                   </div>
-                </div>
-              ) : (
-                <div className="px-4 py-2 bg-emerald-950/20 border-t border-emerald-900/30 text-center font-mono text-xs text-emerald-300 flex items-center justify-center gap-2">
-                  <EyeOff className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Üst sekme barı ve + ikonu tamamen kaldırıldı</span>
+                  <div className="flex-1 py-3 text-center text-slate-500">
+                    Takip Edilenler
+                  </div>
+                  <div className="px-3 py-2 text-slate-400">+</div>
                 </div>
               )}
             </div>
@@ -176,9 +142,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
               <div className="p-3 bg-slate-950 text-xs text-slate-400 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>
-                    Akış Modu: <strong>{!showTabbarAndPlusIcon ? 'Temiz Sekmesiz Akış' : 'Varsayılan Tabbar'}</strong>
-                  </span>
+                  <span>Sol Menü: <strong>Profil, Kaydedilenler, Ayarlar, Çıkış</strong></span>
                 </div>
               </div>
 
@@ -190,10 +154,10 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
                     <span className="font-bold text-white">Tech Brave Developer</span>
-                    <span className="text-slate-500">@techbrave · 12dk</span>
+                    <span className="text-slate-500">@techbrave · 10dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    Artık hem "Sana Özel / Takip Edilenler" sekme barı hem de yanındaki + ikonu tamamen temizlendi! 🚀
+                    Sol menü tamamen sadeleşti! Yalnızca Profil, Kaydedilenler, Ayarlar ve Çıkış butonları kaldı. Üstteki Abone Ol ve + ikonu kaldırıldı. 🎯
                   </p>
                 </div>
               </div>
@@ -206,10 +170,10 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
                     <span className="font-bold text-white">Open Source Community</span>
-                    <span className="text-slate-500">@oss_community · 45dk</span>
+                    <span className="text-slate-500">@oss_community · 30dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    Brave Shields kuralı ile eklenti kurmaya bile gerek kalmadan üst şeridi kaldırabilirsiniz.
+                    Brave Shields içerik filtreleme ile hiç eklenti yüklemeden en sade Twitter akışını kullanabilirsiniz.
                   </p>
                 </div>
               </div>
@@ -217,32 +181,15 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             </div>
           </div>
 
-          {/* Right Sidebar */}
+          {/* Right Sidebar - Clean */}
           <div className="hidden lg:block w-72 p-4 space-y-4 shrink-0">
-            <div className="bg-slate-900 rounded-full px-4 py-2.5 text-slate-400 text-xs flex items-center gap-3 border border-slate-800">
-              <Search className="w-4 h-4 text-slate-500" />
-              <span>Ara</span>
+            <div className="p-3 text-[11px] font-mono text-emerald-400/80 border border-dashed border-emerald-500/20 rounded-xl bg-slate-950">
+              ✓ Sol menü sadeleştirildi
+              <br />
+              ✓ Üst Abone Ol butonu kaldırıldı
+              <br />
+              ✓ Altındaki + ikonu ve tabbar kaldırıldı
             </div>
-
-            {(!extensionEnabled || !options.hideWhoToFollow) ? (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <h3 className="font-bold text-white text-sm">Kimi Takip Etmeli</h3>
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-purple-600 flex items-center justify-center font-bold">GH</div>
-                    <div>
-                      <div className="font-bold text-white">GitHub</div>
-                      <div className="text-slate-500">@github</div>
-                    </div>
-                  </div>
-                  <button className="bg-white text-black font-bold px-3 py-1 rounded-full text-xs">Takip Et</button>
-                </div>
-              </div>
-            ) : (
-              <div className="p-3 text-[11px] font-mono text-orange-400/60 border border-dashed border-orange-500/20 rounded-xl">
-                [Kimi Takip Etmeli Modülü Gizlendi]
-              </div>
-            )}
           </div>
 
         </div>

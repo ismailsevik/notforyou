@@ -22,7 +22,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'content.js',
       language: 'javascript',
       content: contentJs,
-      description: 'Tabbar, + ikonu ve sponsorlu tweetleri gizleyen JavaScript kodu',
+      description: 'Sol menüyü sadeleştiren (Profil, Kaydedilenler, Ayarlar, Çıkış), Abone Ol ve + tabbarını kaldıran JS',
       category: 'extension',
     },
     {
@@ -30,7 +30,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'styles.css',
       language: 'css',
       content: stylesCss,
-      description: 'Sponsorlu tweetleri ve sekme barını gizleyen CSS kuralları',
+      description: 'Üst Abone Ol butonunu, + tabbarını ve sol menüdeki gereksiz öğeleri gizleyen CSS',
       category: 'extension',
     },
     {
@@ -64,9 +64,9 @@ function generateManifestJson(options: ConfigOptions): string {
   return JSON.stringify(
     {
       manifest_version: 3,
-      name: 'Twitter/X Classic Look & Hide Promoted Tweets (Brave)',
-      version: '1.3.0',
-      description: 'Brave Browser için Twitter/X sekme barını, + ikonunu ve sponsorlu reklam tweetlerini tamamen kaldırır.',
+      name: 'Twitter/X Minimalist Menu & Hide Tabbar & Subscribe Button (Brave)',
+      version: '1.4.0',
+      description: 'Sol menüde sadece Profil, Kaydedilenler, Ayarlar ve Çıkış butonlarını bırakır. Üst Abone Ol butonunu ve + tabbarını kaldırır.',
       author: 'GitHub Community',
       icons: {
         "16": "icon16.png",
@@ -93,18 +93,20 @@ function generateManifestJson(options: ConfigOptions): string {
 
 function generateContentJs(options: ConfigOptions): string {
   return `/**
- * Twitter/X Classic Look - Hide Tabbar, Plus Icon & Promoted Tweets
- * Brave Browser Extension
+ * Twitter/X Minimalist Layout:
+ * 1. Sol Menüde SADECE: Profil, Kaydedilenler, Ayarlar, Çıkış bırakılır.
+ * 2. Üst "Abone Ol" / "Subscribe" butonu kaldırılır.
+ * 3. Altındaki + ikonu olan tabbar şeridi kaldırılır.
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Classic-Twitter] Script aktif: Tabbar, + ikonu ve sponsorlu tweetler kaldırılıyor.');
+  console.log('[X-Minimal-Brave] Sadeleştirme betiği aktif.');
 
-  function processTabsAndPlusIcon() {
-    // 1. Tablist ve üst şeridi (+ ikonu dahil) gizle
+  function cleanupUI() {
+    // 1. Üst Sekme Barını (Tabbar) ve Yanındaki + İkonunu Kaldır
     const tabList = document.querySelector('div[role="tablist"]');
     if (tabList) {
       const parentRow = tabList.parentElement;
@@ -115,16 +117,34 @@ function generateContentJs(options: ConfigOptions): string {
       }
     }
 
-    // 2. Yan taraftaki + ikonu / Ayarlar butonunu gizle
-    const plusButtons = document.querySelectorAll(
-      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
+    // 2. Üst "Abone Ol" / "Subscribe" Butonunu ve + Ayarlar İkonunu Kaldır
+    const subscribeAndPlusBtns = document.querySelectorAll(
+      'a[href*="premium_tier_upsell"], a[href*="subscribe"], a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
     );
-    plusButtons.forEach(btn => {
+    subscribeAndPlusBtns.forEach(btn => {
       btn.style.display = 'none';
     });
 
-    ${options.hidePromotedTweets ? `
-    // 3. Sponsorlu / Reklam Tweetlerini Gizle (Promoted Tweets)
+    // 3. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
+    // Kaldırılacak sol menü öğeleri: Grok, Premium, Keşfet, Bildirimler, Topluluklar vb.
+    const navLinks = document.querySelectorAll('nav[role="navigation"] a');
+    navLinks.forEach(link => {
+      const href = (link.getAttribute('href') || '').toLowerCase();
+      
+      // İzin verilen linkler: Home (/home veya /), Profile (kullanıcı adı), Bookmarks (/i/bookmarks), Settings (/settings)
+      const isHome = href === '/home' || href === '/';
+      const isBookmarks = href.includes('/bookmarks');
+      const isSettings = href.includes('/settings');
+      const isProfile = link.getAttribute('data-testid') === 'AppTabBar_Profile_Link' || 
+                        (!href.includes('/i/') && !href.includes('/explore') && !href.includes('/notifications') && !href.includes('/messages') && href.length > 1);
+
+      // İzin verilenler haricindeki menü elemanlarını gizle (Grok, Premium, Communities, Notifications vb.)
+      if (!isHome && !isBookmarks && !isSettings && !isProfile) {
+        link.style.display = 'none';
+      }
+    });
+
+    // 4. Sponsorlu / Reklam Tweetlerini Gizle
     const articles = document.querySelectorAll('article');
     articles.forEach(article => {
       const isPromoted = article.querySelector('a[href*="/quick_promote"]') ||
@@ -136,32 +156,6 @@ function generateContentJs(options: ConfigOptions): string {
         article.style.display = 'none';
       }
     });
-
-    const trackingDivs = document.querySelectorAll('div[data-testid="placementTracking"]');
-    trackingDivs.forEach(div => {
-      const parentArticle = div.closest('article');
-      if (parentArticle) parentArticle.style.display = 'none';
-      else div.style.display = 'none';
-    });
-    ` : ''}
-
-    ${options.hideGrok ? `
-    // Grok Sekmesini Gizle
-    const grokLink = document.querySelector('a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"]');
-    if (grokLink) grokLink.style.display = 'none';
-    ` : ''}
-
-    ${options.hidePremium ? `
-    // Premium Butonunu Gizle
-    const premiumLink = document.querySelector('a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"]');
-    if (premiumLink) premiumLink.style.display = 'none';
-    ` : ''}
-
-    ${options.hideWhoToFollow ? `
-    // Kimi Takip Etmeli Modülünü Gizle
-    const whoToFollow = document.querySelector('aside[aria-label*="Takip"], aside[aria-label*="Who to follow"]');
-    if (whoToFollow) whoToFollow.style.display = 'none';
-    ` : ''}
   }
 
   let isThrottled = false;
@@ -169,14 +163,14 @@ function generateContentJs(options: ConfigOptions): string {
     if (!isThrottled) {
       isThrottled = true;
       requestAnimationFrame(() => {
-        processTabsAndPlusIcon();
+        cleanupUI();
         isThrottled = false;
       });
     }
   });
 
   function init() {
-    processTabsAndPlusIcon();
+    cleanupUI();
 
     const targetNode = document.body || document.documentElement;
     if (targetNode) {
@@ -197,60 +191,50 @@ function generateContentJs(options: ConfigOptions): string {
 }
 
 function generateStylesCss(options: ConfigOptions): string {
-  let css = `/* Twitter/X Classic Look - Remove Tabbar, Plus Icon & Promoted Tweets */\n\n`;
+  return `/* Twitter/X Minimalist Layout - Anti-Flicker CSS for Brave Browser */
 
-  css += `/* 1. Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */\n`;
-  css += `div:has(> div[role="tablist"]),\n`;
-  css += `div[role="tablist"],\n`;
-  css += `a[href*="/settings/timeline"],\n`;
-  css += `div[aria-label*="Timeline settings"],\n`;
-  css += `div[aria-label*="Zaman akışı"],\n`;
-  css += `div[aria-label*="Özel akış"] {\n`;
-  css += `  display: none !important;\n`;
-  css += `}\n\n`;
+/* 1. ÜST TABBAR, + İKONU VE ABONE OL BUTONUNU KALDIR */
+div:has(> div[role="tablist"]),
+div[role="tablist"],
+a[href*="premium_tier_upsell"],
+a[href*="subscribe"],
+a[href*="/settings/timeline"],
+div[aria-label*="Timeline settings"],
+div[aria-label*="Zaman akışı"],
+div[aria-label*="Özel akış"],
+div[aria-label*="Pin"] {
+  display: none !important;
+}
 
-  if (options.hidePromotedTweets) {
-    css += `/* 2. Sponsorlu / Reklam Tweetlerini Gizle (Promoted Tweets) */\n`;
-    css += `article:has(span:has-text("Sponsorlu")),\n`;
-    css += `article:has(span:has-text("Promoted")),\n`;
-    css += `article:has(a[href*="/quick_promote"]),\n`;
-    css += `div[data-testid="placementTracking"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
+/* 2. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
+a[data-testid="AppTabBar_Grok_Link"],
+a[href="/i/grok"],
+a[data-testid="AppTabBar_Premium_Link"],
+a[href*="/premium"],
+a[href*="/communities"],
+a[href*="/verified-orgs"],
+a[href*="/i/jobs"] {
+  display: none !important;
+}
 
-  if (options.hideGrok) {
-    css += `/* Grok Sekmesini Gizle */\n`;
-    css += `a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
-
-  if (options.hidePremium) {
-    css += `/* Premium / Premium'a Katıl Butonunu Gizle */\n`;
-    css += `a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
-
-  if (options.hideWhoToFollow) {
-    css += `/* Kimi Takip Etmeli Modülünü Gizle */\n`;
-    css += `aside[aria-label*="Takip"], aside[aria-label*="Who to follow"] {\n`;
-    css += `  display: none !important;\n`;
-    css += `}\n\n`;
-  }
-
-  return css;
+/* 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE */
+article:has(span:has-text("Sponsorlu")),
+article:has(span:has-text("Promoted")),
+article:has(a[href*="/quick_promote"]),
+div[data-testid="placementTracking"] {
+  display: none !important;
+}
+`;
 }
 
 function generateUserScriptJs(options: ConfigOptions): string {
   const contentJs = generateContentJs(options);
 
   return `// ==UserScript==
-// @name         Twitter/X Tabbar, + İkonu ve Sponsorlu Tweetleri Kaldır (Brave)
+// @name         Twitter/X Sadeleştirilmiş Görünüm (Sol Menü & Tabbar Temizleme)
 // @namespace    https://github.com/
-// @version      1.3.0
-// @description  Brave Browser için Twitter/X sekme barını, + ikonunu ve sponsorlu reklam tweetlerini tamamen kaldırır.
+// @version      1.4.0
+// @description  Brave Browser için sol menüde SADECE Profil, Kaydedilenler, Ayarlar, Çıkış bırakır; üst Abone Ol ve + tabbarını kaldırır.
 // @author       GitHub Developer
 // @match        https://twitter.com/*
 // @match        https://x.com/*
@@ -264,67 +248,64 @@ ${contentJs}
 }
 
 function generateBraveShieldsTxt(options: ConfigOptions): string {
-  return `! Title: Twitter/X Tabbar, + İkonu ve Sponsorlu Reklamları Kaldırma - Brave Shields Filtre Listesi
-! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için içerik filtreleme kuralları.
+  return `! Title: Twitter/X Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
+! Description: Sol menüde SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır. Üst Abone Ol butonunu ve + tabbarını kaldırır.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! 1. TABBAR VE YANINDAKİ + İKONU DAHİL TÜM ÜST ŞERİDİ GİZLE
+! 1. ÜST ABONE OL BUTONU, TABBAR VE + İKONUNU KALDIR
 ! ===================================================================
 x.com##div:has(> div[role="tablist"])
 twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
 twitter.com##div[role="tablist"]
+x.com##a[href*="premium_tier_upsell"]
+twitter.com##a[href*="premium_tier_upsell"]
+x.com##a[href*="subscribe"]
+twitter.com##a[href*="subscribe"]
 x.com##a[href*="/settings/timeline"]
 twitter.com##a[href*="/settings/timeline"]
 x.com##div[aria-label*="Timeline"]
 twitter.com##div[aria-label*="Timeline"]
-x.com##div[aria-label*="Zaman akışı"]
-twitter.com##div[aria-label*="Zaman akışı"]
 
-${options.hidePromotedTweets ? `
 ! ===================================================================
-! 2. SPONSORLU / REKLAM TWEETLERİNİ GİZLE (PROMOTED TWEETS)
+! 2. SOL MENÜ TEMİZLİĞİ (Grok, Premium, Topluluklar vb. Gizle)
+! ===================================================================
+x.com##a[data-testid="AppTabBar_Grok_Link"]
+twitter.com##a[data-testid="AppTabBar_Grok_Link"]
+x.com##a[href="/i/grok"]
+twitter.com##a[href="/i/grok"]
+x.com##a[data-testid="AppTabBar_Premium_Link"]
+twitter.com##a[data-testid="AppTabBar_Premium_Link"]
+x.com##a[href*="/communities"]
+twitter.com##a[href*="/communities"]
+
+! ===================================================================
+! 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE
 ! ===================================================================
 x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 x.com##div[data-testid="placementTracking"]
 twitter.com##div[data-testid="placementTracking"]
-x.com##article:has(a[href*="/quick_promote"])
-twitter.com##article:has(a[href*="/quick_promote"])` : ''}
-
-${options.hideGrok ? `
-! --- Grok Sekmesini Gizle ---
-x.com##a[data-testid="AppTabBar_Grok_Link"]
-twitter.com##a[data-testid="AppTabBar_Grok_Link"]` : ''}
-
-${options.hidePremium ? `
-! --- Premium Butonunu Gizle ---
-x.com##a[data-testid="AppTabBar_Premium_Link"]
-twitter.com##a[data-testid="AppTabBar_Premium_Link"]` : ''}
-
-${options.hideWhoToFollow ? `
-! --- Kimi Takip Etmeli Modülünü Gizle ---
-x.com##aside[aria-label*="Takip"]
-twitter.com##aside[aria-label*="Takip"]` : ''}
 `;
 }
 
 function generateReadmeMd(options: ConfigOptions): string {
-  return `# 🚫 Twitter/X Tabbar, + İkonu ve Sponsorlu Tweetleri Kaldırma Kodu (Brave Browser)
+  return `# 🚫 Twitter/X Minimalist Sadeleştirme Kodu (Brave Browser)
 
-Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) üzerindeki **"Sana Özel" / "Takip Edilenler"** sekme barını, **+ (Artı)** ikonunu ve **Sponsorlu (Promoted)** reklam tweetlerini tamamen kaldırarak **Eski Temiz Twitter** görünümünü sağlayan eklenti ve Brave Shields kuralları.
+Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) arayüzünü tamamen sadeleştiren eklenti ve Brave Shields filtre kuralı.
 
 ---
 
 ## 🚀 Özellikler
 
-- ✅ **Tabbar ve + İkonu Kaldırma:** Sekme barını ve yanındaki ayarlar / + butonunu siler.
-- ✅ **Sponsorlu (Reklam) Tweet Temizliği:** Akıştaki tüm sponsorlu gönderileri gizler.
+- ✅ **Sade Sol Menü:** Sol tarafta **SADECE** Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır.
+- ✅ **Üst Abone Ol Butonunu Kaldırır:** Üst başlıkta yer alan reklam/abone ol teklifini gizler.
+- ✅ **+ İkonlu Tabbarı Kaldırır:** "Sana Özel", "Takip Edilenler" sekme barını ve + ikonunu yok eder.
+- ✅ **Sponsorlu Tweet Temizliği:** Akıştaki reklam gönderilerini kaldırır.
 - ✅ **Brave Shields Uyumlu:** Eklentisiz \`brave://adblock\` içerik filtreleme kuralı.
-- ✅ **Grok ve Premium Temizliği:** Sol menüdeki Grok ve reklam butonlarını kaldırır.
 
 ---
 

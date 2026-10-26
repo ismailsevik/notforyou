@@ -1,16 +1,18 @@
 /**
- * Twitter/X Classic Look - Hide Tabbar, Plus Icon & Promoted Tweets
- * Brave Browser Extension & UserScript
+ * Twitter/X Minimalist Layout:
+ * 1. Sol Menüde SADECE: Profil, Kaydedilenler, Ayarlar, Çıkış bırakılır.
+ * 2. Üst "Abone Ol" / "Subscribe" butonu kaldırılır.
+ * 3. Altındaki + ikonu olan tabbar şeridi kaldırılır.
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Classic-Twitter] Script aktif: Tabbar, + ikonu ve sponsorlu tweetler kaldırılıyor.');
+  console.log('[X-Minimal-Brave] Sadeleştirme betiği aktif.');
 
-  function processTabsAndPlusIcon() {
-    // 1. Tablist ve üst şeridini (+ ikonu dahil) gizle
+  function cleanupUI() {
+    // 1. Üst Sekme Barını (Tabbar) ve Yanındaki + İkonunu Kaldır
     const tabList = document.querySelector('div[role="tablist"]');
     if (tabList) {
       const parentRow = tabList.parentElement;
@@ -21,15 +23,31 @@
       }
     }
 
-    // 2. Yan taraftaki + ikonu / Ayarlar butonunu gizle
-    const plusButtons = document.querySelectorAll(
-      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
+    // 2. Üst "Abone Ol" / "Subscribe" Butonunu ve + Ayarlar İkonunu Kaldır
+    const subscribeAndPlusBtns = document.querySelectorAll(
+      'a[href*="premium_tier_upsell"], a[href*="subscribe"], a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
     );
-    plusButtons.forEach(btn => {
+    subscribeAndPlusBtns.forEach(btn => {
       btn.style.display = 'none';
     });
 
-    // 3. Sponsorlu / Reklam Tweetlerini Gizle (Promoted Tweets)
+    // 3. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
+    const navLinks = document.querySelectorAll('nav[role="navigation"] a');
+    navLinks.forEach(link => {
+      const href = (link.getAttribute('href') || '').toLowerCase();
+      
+      const isHome = href === '/home' || href === '/';
+      const isBookmarks = href.includes('/bookmarks');
+      const isSettings = href.includes('/settings');
+      const isProfile = link.getAttribute('data-testid') === 'AppTabBar_Profile_Link' || 
+                        (!href.includes('/i/') && !href.includes('/explore') && !href.includes('/notifications') && !href.includes('/messages') && href.length > 1);
+
+      if (!isHome && !isBookmarks && !isSettings && !isProfile) {
+        link.style.display = 'none';
+      }
+    });
+
+    // 4. Sponsorlu / Reklam Tweetlerini Gizle
     const articles = document.querySelectorAll('article');
     articles.forEach(article => {
       const isPromoted = article.querySelector('a[href*="/quick_promote"]') ||
@@ -41,20 +59,6 @@
         article.style.display = 'none';
       }
     });
-
-    const trackingDivs = document.querySelectorAll('div[data-testid="placementTracking"]');
-    trackingDivs.forEach(div => {
-      const parentArticle = div.closest('article');
-      if (parentArticle) parentArticle.style.display = 'none';
-      else div.style.display = 'none';
-    });
-
-    // 4. Grok ve Premium gizle
-    const grokLink = document.querySelector('a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"]');
-    if (grokLink) grokLink.style.display = 'none';
-
-    const premiumLink = document.querySelector('a[data-testid="AppTabBar_Premium_Link"], a[href="/i/premium_tier_upsell"]');
-    if (premiumLink) premiumLink.style.display = 'none';
   }
 
   let isThrottled = false;
@@ -62,14 +66,14 @@
     if (!isThrottled) {
       isThrottled = true;
       requestAnimationFrame(() => {
-        processTabsAndPlusIcon();
+        cleanupUI();
         isThrottled = false;
       });
     }
   });
 
   function init() {
-    processTabsAndPlusIcon();
+    cleanupUI();
 
     const targetNode = document.body || document.documentElement;
     if (targetNode) {

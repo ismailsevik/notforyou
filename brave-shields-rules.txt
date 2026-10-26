@@ -1,50 +1,41 @@
-! Title: Twitter/X Tabbar, + İkonu ve Sponsorlu Reklamları Kaldırma - Brave Shields Filtre Listesi
-! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme kuralları.
+! Title: Twitter/X Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
+! Description: Sol menüde SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır. Üst Abone Ol butonunu ve + tabbarını kaldırır.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! 1. TABBAR VE YANINDAKİ + İKONU DAHİL TÜM ÜST ŞERİDİ GİZLE
+! 1. ÜST ABONE OL BUTONU, TABBAR VE + İKONUNU KALDIR
 ! ===================================================================
 x.com##div:has(> div[role="tablist"])
 twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
 twitter.com##div[role="tablist"]
+x.com##a[href*="premium_tier_upsell"]
+twitter.com##a[href*="premium_tier_upsell"]
+x.com##a[href*="subscribe"]
+twitter.com##a[href*="subscribe"]
 x.com##a[href*="/settings/timeline"]
 twitter.com##a[href*="/settings/timeline"]
 x.com##div[aria-label*="Timeline"]
 twitter.com##div[aria-label*="Timeline"]
-x.com##div[aria-label*="Zaman akışı"]
-twitter.com##div[aria-label*="Zaman akışı"]
 
 ! ===================================================================
-! 2. SPONSORLU / REKLAM TWEETLERİNİ GİZLE (PROMOTED TWEETS)
-! ===================================================================
-x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
-twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
-x.com##div[data-testid="placementTracking"]
-twitter.com##div[data-testid="placementTracking"]
-x.com##article:has(a[href*="/quick_promote"])
-twitter.com##article:has(a[href*="/quick_promote"])
-
-! ===================================================================
-! 3. GROK AI VE PREMIUM SEKMELERİNİ GİZLE
+! 2. SOL MENÜ TEMİZLİĞİ (Grok, Premium, Topluluklar vb. Gizle)
 ! ===================================================================
 x.com##a[data-testid="AppTabBar_Grok_Link"]
 twitter.com##a[data-testid="AppTabBar_Grok_Link"]
 x.com##a[href="/i/grok"]
 twitter.com##a[href="/i/grok"]
-
 x.com##a[data-testid="AppTabBar_Premium_Link"]
 twitter.com##a[data-testid="AppTabBar_Premium_Link"]
-x.com##a[href="/i/premium_tier_upsell"]
-twitter.com##a[href="/i/premium_tier_upsell"]
+x.com##a[href*="/communities"]
+twitter.com##a[href*="/communities"]
 
 ! ===================================================================
-! 4. "KİMİ TAKİP ETMELİ" MODÜLÜNÜ GİZLE
+! 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE
 ! ===================================================================
-x.com##aside[aria-label*="Takip"]
-twitter.com##aside[aria-label*="Takip"]
-x.com##aside[aria-label*="Who to follow"]
-twitter.com##aside[aria-label*="Who to follow"]
+x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
+twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
+x.com##div[data-testid="placementTracking"]
+twitter.com##div[data-testid="placementTracking"]
