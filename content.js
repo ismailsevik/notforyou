@@ -2,14 +2,15 @@
  * Twitter/X Minimalist Layout:
  * 1. Sol Menüde SADECE: Profil, Kaydedilenler, Ayarlar, Çıkış bırakılır.
  * 2. Üst "Abone Ol" / "Subscribe" butonu kaldırılır.
- * 3. Altındaki + ikonu olan tabbar şeridi kaldırılır.
+ * 3. Üst + ikonu ve sekme barı kaldırılır.
+ * 4. "Konuları Özelleştir" (Customize Topics) tabbarı ve modülleri kaldırılır.
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Minimal-Brave] Sadeleştirme betiği aktif.');
+  console.log('[X-Minimal-Brave] Betik aktif: Konuları özelleştir tabbarı temizleniyor.');
 
   function cleanupUI() {
     // 1. Üst Sekme Barını (Tabbar) ve Yanındaki + İkonunu Kaldır
@@ -31,7 +32,15 @@
       btn.style.display = 'none';
     });
 
-    // 3. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
+    // 3. "Konuları Özelleştir" (Customize Topics) Tabbarını ve Modüllerini Kaldır
+    const topicElements = document.querySelectorAll(
+      'div[aria-label*="Konuları özelleştir"], div[aria-label*="Customize topics"], div[data-testid="topicsModule"], div[data-testid="TopicToFollow"], a[href*="/i/topics"], a[href*="/settings/topics"]'
+    );
+    topicElements.forEach(el => {
+      el.style.display = 'none';
+    });
+
+    // 4. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
     const navLinks = document.querySelectorAll('nav[role="navigation"] a');
     navLinks.forEach(link => {
       const href = (link.getAttribute('href') || '').toLowerCase();
@@ -47,7 +56,7 @@
       }
     });
 
-    // 4. Sponsorlu / Reklam Tweetlerini Gizle
+    // 5. Sponsorlu / Reklam Tweetlerini Gizle
     const articles = document.querySelectorAll('article');
     articles.forEach(article => {
       const isPromoted = article.querySelector('a[href*="/quick_promote"]') ||

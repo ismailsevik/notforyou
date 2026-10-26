@@ -13,7 +13,19 @@ div[aria-label*="Pin"] {
   display: none !important;
 }
 
-/* 2. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
+/* 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ KALDIR */
+div[aria-label*="Konuları özelleştir"],
+div[aria-label*="Customize topics"],
+div[aria-label*="Konular"],
+div[aria-label*="Topics"],
+div[data-testid="topicsModule"],
+div[data-testid="TopicToFollow"],
+a[href*="/i/topics"],
+a[href*="/settings/topics"] {
+  display: none !important;
+}
+
+/* 3. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
 a[data-testid="AppTabBar_Grok_Link"],
 a[href="/i/grok"],
 a[data-testid="AppTabBar_Premium_Link"],
@@ -24,7 +36,7 @@ a[href*="/i/jobs"] {
   display: none !important;
 }
 
-/* 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE */
+/* 4. SPONSORLU (REKLAM) TWEETLERİ GİZLE */
 article:has(span:has-text("Sponsorlu")),
 article:has(span:has-text("Promoted")),
 article:has(a[href*="/quick_promote"]),

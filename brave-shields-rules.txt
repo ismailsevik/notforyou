@@ -1,5 +1,5 @@
-! Title: NotForYou 
-! Description: Sol menüde SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır. Üst Abone Ol butonunu ve + tabbarını kaldırır.
+! Title: Twitter/X Konuları Özelleştir & Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
+! Description: "Konuları Özelleştir" tabbarını, üst sekme barını, Abone Ol butonunu ve sol menüdeki fazlalıkları kaldırır.
 ! Homepage: https://github.com/
 ! License: MIT
 !
@@ -17,11 +17,23 @@ x.com##a[href*="subscribe"]
 twitter.com##a[href*="subscribe"]
 x.com##a[href*="/settings/timeline"]
 twitter.com##a[href*="/settings/timeline"]
-x.com##div[aria-label*="Timeline"]
-twitter.com##div[aria-label*="Timeline"]
 
 ! ===================================================================
-! 2. SOL MENÜ TEMİZLİĞİ (Grok, Premium, Topluluklar vb. Gizle)
+! 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ GİZLE
+! ===================================================================
+x.com##div[aria-label*="Konuları özelleştir"]
+twitter.com##div[aria-label*="Konuları özelleştir"]
+x.com##div[aria-label*="Customize topics"]
+twitter.com##div[aria-label*="Customize topics"]
+x.com##div[data-testid="topicsModule"]
+twitter.com##div[data-testid="topicsModule"]
+x.com##div[data-testid="TopicToFollow"]
+twitter.com##div[data-testid="TopicToFollow"]
+x.com##a[href*="/i/topics"]
+twitter.com##a[href*="/i/topics"]
+
+! ===================================================================
+! 3. SOL MENÜ TEMİZLİĞİ (Sadece Profil, Kaydedilenler, Ayarlar, Çıkış)
 ! ===================================================================
 x.com##a[data-testid="AppTabBar_Grok_Link"]
 twitter.com##a[data-testid="AppTabBar_Grok_Link"]
@@ -33,9 +45,7 @@ x.com##a[href*="/communities"]
 twitter.com##a[href*="/communities"]
 
 ! ===================================================================
-! 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE
+! 4. SPONSORLU (REKLAM) TWEETLERİ GİZLE
 ! ===================================================================
 x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
-x.com##div[data-testid="placementTracking"]
-twitter.com##div[data-testid="placementTracking"]
