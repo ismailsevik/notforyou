@@ -1,0 +1,24 @@
+/* Twitter/X Hide For You Tab - Anti-Flicker CSS for Brave Browser */
+
+/* "Sana Özel" (For You) Sekmesini Gizle */
+div[role="tablist"] > div[role="presentation"]:first-child,
+div[role="tablist"] a[href="/home"][role="tab"]:first-child {
+  display: none !important;
+}
+
+/* Grok Sekmesini Gizle */
+a[data-testid="AppTabBar_Grok_Link"] {
+  display: none !important;
+}
+
+/* Premium / Premium'a Katıl Butonunu Gizle */
+a[data-testid="AppTabBar_Premium_Link"],
+a[href="/i/premium_tier_upsell"] {
+  display: none !important;
+}
+
+/* Kimi Takip Etmeli Modülünü Gizle */
+aside[aria-label*="Takip"],
+aside[aria-label*="Who to follow"] {
+  display: none !important;
+}

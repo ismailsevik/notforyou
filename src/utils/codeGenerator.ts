@@ -292,28 +292,63 @@ ${contentJs}
 }
 
 function generateBraveShieldsTxt(options: ConfigOptions): string {
-  return `! Title: Twitter/X Hide For You & Extra Clean Rules for Brave Shields
-! Description: Brave Browser dahili AdBlock / Brave Shields (brave://adblock) için özel CSS filtre kuralları.
+  return `! Title: Twitter/X "Sana Özel" (For You) Sekmesini Gizleme - Brave Shields Filtre Listesi
+! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme (Cosmetic Filtering) kuralları.
 ! Homepage: https://github.com/
+! License: MIT
+! Update Frequency: 7 days
 !
 
-! --- Twitter / X "Sana Özel" (For You) Sekmesini Gizle ---
-${options.hideForYou ? `x.com##div[role="tablist"] > div[role="presentation"]:first-child
+! ===================================================================
+! 1. TWITTER / X "SANA ÖZEL" (FOR YOU) SEKMESİNİ İÇERİK FİLTRELEME İLE GİZLE
+! ===================================================================
+${options.hideForYou ? `! Metin bazlı gelişmiş içerik filtreleme (Türkçe, İngilizce, Almanca, Fransızca, İspanyolca vb.)
+x.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You|Für dich|Pour vous|Para ti|おすすめ/)
+twitter.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You|Für dich|Pour vous|Para ti|おすすめ/)
+
+! Sekme kapsayıcı div ögesini gizle (Yapısal Filtreleme)
+x.com##div[role="tablist"] > div[role="presentation"]:has(a[role="tab"]:has-text(/Sana Özel|For You/))
+twitter.com##div[role="tablist"] > div[role="presentation"]:has(a[role="tab"]:has-text(/Sana Özel|For You/))
+
+! Ilk sekme doğrudan gizleme kuralı (Home Tablist)
+x.com##div[role="tablist"] > div[role="presentation"]:first-child
 twitter.com##div[role="tablist"] > div[role="presentation"]:first-child
-x.com##div[role="tablist"] a[role="tab"]:first-child
-twitter.com##div[role="tablist"] a[role="tab"]:first-child` : '! For You sekmesi aktif'}
+x.com##div[role="tablist"] a[href="/home"][role="tab"]:first-child
+twitter.com##div[role="tablist"] a[href="/home"][role="tab"]:first-child` : '! Sana Özel sekmesi gizleme pasif'}
 
-${options.hideGrok ? `! --- Grok Butonunu Gizle ---
+${options.hideGrok ? `
+! ===================================================================
+! 2. GROK AI SEKMESİNİ GİZLE
+! ===================================================================
 x.com##a[data-testid="AppTabBar_Grok_Link"]
-twitter.com##a[data-testid="AppTabBar_Grok_Link"]` : ''}
+twitter.com##a[data-testid="AppTabBar_Grok_Link"]
+x.com##a[href="/i/grok"]
+twitter.com##a[href="/i/grok"]` : ''}
 
-${options.hidePremium ? `! --- Premium Butonunu Gizle ---
+${options.hidePremium ? `
+! ===================================================================
+! 3. PREMIUM VE ABONE OL BUTONLARINI GİZLE
+! ===================================================================
 x.com##a[data-testid="AppTabBar_Premium_Link"]
-twitter.com##a[data-testid="AppTabBar_Premium_Link"]` : ''}
+twitter.com##a[data-testid="AppTabBar_Premium_Link"]
+x.com##a[href="/i/premium_tier_upsell"]
+twitter.com##a[href="/i/premium_tier_upsell"]` : ''}
 
-${options.hideWhoToFollow ? `! --- Kimi Takip Etmeli Modülünü Gizle ---
+${options.hideWhoToFollow ? `
+! ===================================================================
+! 4. "KİMİ TAKİP ETMELİ" VE SAĞ SÜTUN TAVSİYELERİNİ GİZLE
+! ===================================================================
 x.com##aside[aria-label*="Takip"]
-twitter.com##aside[aria-label*="Takip"]` : ''}
+twitter.com##aside[aria-label*="Takip"]
+x.com##aside[aria-label*="Who to follow"]
+twitter.com##aside[aria-label*="Who to follow"]` : ''}
+
+${options.hideSidebarTrends ? `
+! ===================================================================
+! 5. GÜNDEMDEKİLER (TRENDS) MODÜLÜNÜ GİZLE
+! ===================================================================
+x.com##div[data-testid="sidebarColumn"] section[aria-labelledby*="accessible-list"]
+twitter.com##div[data-testid="sidebarColumn"] section[aria-labelledby*="accessible-list"]` : ''}
 `;
 }
 
