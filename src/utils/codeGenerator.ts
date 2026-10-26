@@ -22,7 +22,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'content.js',
       language: 'javascript',
       content: contentJs,
-      description: 'Sol menüyü, üst tabbarı, + ikonunu, Abone Ol ve Konuları Özelleştir tabbarını kaldıran JS',
+      description: 'Üst + ikonu ve satırını kaldırır, sol menüden Premium, İçerik Stüdyosu ve Reklamları gizler JS',
       category: 'extension',
     },
     {
@@ -30,7 +30,7 @@ export function generateAllFiles(options: ConfigOptions): GeneratedFile[] {
       filename: 'styles.css',
       language: 'css',
       content: stylesCss,
-      description: 'Konuları Özelleştir tabbarını, üst tabbarı ve reklamları gizleyen CSS',
+      description: 'Üst + satırını ve Premium/İçerik Stüdyosu/Reklamlar menülerini gizleyen anti-flicker CSS',
       category: 'extension',
     },
     {
@@ -64,9 +64,9 @@ function generateManifestJson(options: ConfigOptions): string {
   return JSON.stringify(
     {
       manifest_version: 3,
-      name: 'Twitter/X Minimalist Layout & Hide Topics Tabbar (Brave)',
-      version: '1.5.0',
-      description: 'Twitter/X "Konuları Özelleştir" tabbarını, sekme barını, + ikonunu ve üst Abone Ol butonunu tamamen kaldırır.',
+      name: 'Twitter/X Clean Layout & Remove Plus Row (Brave)',
+      version: '1.6.0',
+      description: 'Twitter/X üst bardaki + ikonunu ve satırını kaldırır; sol menüden Premium, İçerik Stüdyosu ve Reklamları gizler.',
       author: 'GitHub Community',
       icons: {
         "16": "icon16.png",
@@ -93,64 +93,54 @@ function generateManifestJson(options: ConfigOptions): string {
 
 function generateContentJs(options: ConfigOptions): string {
   return `/**
- * Twitter/X Minimalist Layout:
- * 1. Sol Menüde SADECE: Profil, Kaydedilenler, Ayarlar, Çıkış.
- * 2. Üst "Abone Ol" / "Subscribe" butonu kaldırılır.
- * 3. Üst + ikonu ve sekme barı kaldırılır.
- * 4. "Konuları Özelleştir" (Customize Topics) tabbarı ve modülleri kaldırılır.
+ * Twitter/X Clean Layout & Remove Plus Row
+ * 1. Üst bardaki sağ taraftaki + ikonu ve o sekme satırını tamamen kaldırır.
+ * 2. Sol menüyü orijinal tutar; Sadece Premium, İçerik Stüdyosu ve Reklamları gizler.
+ * 3. Sponsorlu reklam tweetlerini temizler.
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Minimal-Brave] Betik aktif: Konuları özelleştir tabbarı temizleniyor.');
+  console.log('[X-Clean-Brave] Betik aktif: + ikonu satırı ve reklamlar temizleniyor.');
 
   function cleanupUI() {
-    // 1. Üst Sekme Barını (Tabbar) ve Yanındaki + İkonunu Kaldır
-    const tabList = document.querySelector('div[role="tablist"]');
-    if (tabList) {
-      const parentRow = tabList.parentElement;
-      if (parentRow && parentRow.tagName !== 'BODY') {
-        parentRow.style.display = 'none';
-      } else {
-        tabList.style.display = 'none';
+    // 1. Üst Sekme Barını, Sağdaki + İkonunu ve O Satırı Tamamen Yok Et
+    const tabLists = document.querySelectorAll('div[role="tablist"], div[data-testid="ScrollSnap-List"]');
+    tabLists.forEach(tabList => {
+      tabList.style.display = 'none';
+      if (tabList.parentElement && tabList.parentElement.tagName !== 'BODY') {
+        tabList.parentElement.style.display = 'none';
       }
-    }
-
-    // 2. Üst "Abone Ol" / "Subscribe" Butonunu ve + Ayarlar İkonunu Kaldır
-    const subscribeAndPlusBtns = document.querySelectorAll(
-      'a[href*="premium_tier_upsell"], a[href*="subscribe"], a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
-    );
-    subscribeAndPlusBtns.forEach(btn => {
-      btn.style.display = 'none';
     });
 
-    // 3. "Konuları Özelleştir" (Customize Topics) Tabbarını ve Modüllerini Kaldır
+    const plusAndSettingsRow = document.querySelectorAll(
+      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"], a[href*="premium_tier_upsell"], a[href*="subscribe"]'
+    );
+    plusAndSettingsRow.forEach(el => {
+      el.style.display = 'none';
+      const parentContainer = el.closest('div[style*="sticky"] > div:nth-child(2)');
+      if (parentContainer) parentContainer.style.display = 'none';
+    });
+
+    // 2. Sol Menü: Orijinal menüyü koru; SADECE Premium, İçerik Stüdyosu, Reklamlar ve Grok kaldır
+    const itemsToHideInMenu = document.querySelectorAll(
+      'a[data-testid="AppTabBar_Premium_Link"], a[href*="/premium"], a[href*="/creator-studio"], a[href*="/analytics"], a[href*="ads.twitter.com"], a[href*="/ads"], a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"], a[href*="/verified-orgs"], a[href*="/i/jobs"]'
+    );
+    itemsToHideInMenu.forEach(item => {
+      item.style.display = 'none';
+    });
+
+    // 3. Konuları Özelleştir Tabbarı ve Modüllerini Kaldır
     const topicElements = document.querySelectorAll(
-      'div[aria-label*="Konuları özelleştir"], div[aria-label*="Customize topics"], div[data-testid="topicsModule"], div[data-testid="TopicToFollow"], a[href*="/i/topics"], a[href*="/settings/topics"]'
+      'div[aria-label*="Konuları özelleştir"], div[aria-label*="Customize topics"], div[data-testid="topicsModule"], div[data-testid="TopicToFollow"], a[href*="/i/topics"]'
     );
     topicElements.forEach(el => {
       el.style.display = 'none';
     });
 
-    // 4. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
-    const navLinks = document.querySelectorAll('nav[role="navigation"] a');
-    navLinks.forEach(link => {
-      const href = (link.getAttribute('href') || '').toLowerCase();
-      
-      const isHome = href === '/home' || href === '/';
-      const isBookmarks = href.includes('/bookmarks');
-      const isSettings = href.includes('/settings');
-      const isProfile = link.getAttribute('data-testid') === 'AppTabBar_Profile_Link' || 
-                        (!href.includes('/i/') && !href.includes('/explore') && !href.includes('/notifications') && !href.includes('/messages') && href.length > 1);
-
-      if (!isHome && !isBookmarks && !isSettings && !isProfile) {
-        link.style.display = 'none';
-      }
-    });
-
-    // 5. Sponsorlu / Reklam Tweetlerini Gizle
+    // 4. Sponsorlu / Reklam Tweetlerini Gizle
     const articles = document.querySelectorAll('article');
     articles.forEach(article => {
       const isPromoted = article.querySelector('a[href*="/quick_promote"]') ||
@@ -197,11 +187,12 @@ function generateContentJs(options: ConfigOptions): string {
 }
 
 function generateStylesCss(options: ConfigOptions): string {
-  return `/* Twitter/X Minimalist Layout - Anti-Flicker CSS for Brave Browser */
+  return `/* Twitter/X Clean Layout - Anti-Flicker CSS for Brave Browser */
 
-/* 1. ÜST TABBAR, + İKONU VE ABONE OL BUTONUNU KALDIR */
-div:has(> div[role="tablist"]),
+/* 1. ÜST BARDAN + İKONUNU, SEKME SATIRINI VE ABONE OL BUTONUNU TAMAMEN KALDIR */
 div[role="tablist"],
+div:has(> div[role="tablist"]),
+div[data-testid="ScrollSnap-List"],
 a[href*="premium_tier_upsell"],
 a[href*="subscribe"],
 a[href*="/settings/timeline"],
@@ -212,26 +203,26 @@ div[aria-label*="Pin"] {
   display: none !important;
 }
 
-/* 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ KALDIR */
-div[aria-label*="Konuları özelleştir"],
-div[aria-label*="Customize topics"],
-div[aria-label*="Konular"],
-div[aria-label*="Topics"],
-div[data-testid="topicsModule"],
-div[data-testid="TopicToFollow"],
-a[href*="/i/topics"],
-a[href*="/settings/topics"] {
+/* 2. SOL MENÜDEN SADECE PREMIUM, İÇERİK STÜDYOSU (CREATOR STUDIO), REKLAMLAR VE GROK KALDIR */
+a[data-testid="AppTabBar_Premium_Link"],
+a[href*="/premium"],
+a[href*="/creator-studio"],
+a[href*="/analytics"],
+a[href*="ads.twitter.com"],
+a[href*="/ads"],
+a[data-testid="AppTabBar_Grok_Link"],
+a[href="/i/grok"],
+a[href*="/verified-orgs"],
+a[href*="/i/jobs"] {
   display: none !important;
 }
 
-/* 3. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
-a[data-testid="AppTabBar_Grok_Link"],
-a[href="/i/grok"],
-a[data-testid="AppTabBar_Premium_Link"],
-a[href*="/premium"],
-a[href*="/communities"],
-a[href*="/verified-orgs"],
-a[href*="/i/jobs"] {
+/* 3. "KONULARI ÖZELLEŞTİR" TABBAR VE MODÜLLERİNİ KALDIR */
+div[aria-label*="Konuları özelleştir"],
+div[aria-label*="Customize topics"],
+div[data-testid="topicsModule"],
+div[data-testid="TopicToFollow"],
+a[href*="/i/topics"] {
   display: none !important;
 }
 
@@ -249,10 +240,10 @@ function generateUserScriptJs(options: ConfigOptions): string {
   const contentJs = generateContentJs(options);
 
   return `// ==UserScript==
-// @name         Twitter/X Konuları Özelleştir & Tabbar Temizleme (Brave)
+// @name         Twitter/X + İkonu Satırını & Premium/Reklamlar Gizleme (Brave)
 // @namespace    https://github.com/
-// @version      1.5.0
-// @description  Twitter/X "Konuları Özelleştir" tabbarını, sekme barını, + ikonunu ve sol menüdeki gereksiz öğeleri kaldırır.
+// @version      1.6.0
+// @description  Twitter/X üst bardaki + ikonunu ve sekme satırını kaldırır. Sol menüden Premium, İçerik Stüdyosu ve Reklamları gizler.
 // @author       GitHub Developer
 // @match        https://twitter.com/*
 // @match        https://x.com/*
@@ -266,54 +257,48 @@ ${contentJs}
 }
 
 function generateBraveShieldsTxt(options: ConfigOptions): string {
-  return `! Title: Twitter/X Konuları Özelleştir & Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
-! Description: "Konuları Özelleştir" tabbarını, üst sekme barını, Abone Ol butonunu ve sol menüdeki fazlalıkları kaldırır.
+  return `! Title: Twitter/X + İkonu Satırını & Premium/İçerik Stüdyosu/Reklamları Kaldırma - Brave Shields Filtresi
+! Description: Üst bardaki + ikonunu ve satırını kaldırır. Sol menüden Premium, İçerik Stüdyosu ve Reklamları gizler.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! 1. ÜST ABONE OL BUTONU, TABBAR VE + İKONUNU KALDIR
+! 1. ÜST BARDAN + İKONUNU, SEKME SATIRINI VE ABONE OL BUTONUNU KALDIR
 ! ===================================================================
 x.com##div:has(> div[role="tablist"])
 twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
 twitter.com##div[role="tablist"]
-x.com##a[href*="premium_tier_upsell"]
-twitter.com##a[href*="premium_tier_upsell"]
-x.com##a[href*="subscribe"]
-twitter.com##a[href*="subscribe"]
+x.com##div[data-testid="ScrollSnap-List"]
+twitter.com##div[data-testid="ScrollSnap-List"]
 x.com##a[href*="/settings/timeline"]
 twitter.com##a[href*="/settings/timeline"]
+x.com##div[aria-label*="Timeline"]
+twitter.com##div[aria-label*="Timeline"]
+x.com##div[aria-label*="Zaman akışı"]
+twitter.com##div[aria-label*="Zaman akışı"]
+x.com##a[href*="premium_tier_upsell"]
+twitter.com##a[href*="premium_tier_upsell"]
 
 ! ===================================================================
-! 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ GİZLE
+! 2. SOL MENÜ TEMİZLİĞİ (Sadece Premium, İçerik Stüdyosu, Reklamlar ve Grok Gizle)
 ! ===================================================================
-x.com##div[aria-label*="Konuları özelleştir"]
-twitter.com##div[aria-label*="Konuları özelleştir"]
-x.com##div[aria-label*="Customize topics"]
-twitter.com##div[aria-label*="Customize topics"]
-x.com##div[data-testid="topicsModule"]
-twitter.com##div[data-testid="topicsModule"]
-x.com##div[data-testid="TopicToFollow"]
-twitter.com##div[data-testid="TopicToFollow"]
-x.com##a[href*="/i/topics"]
-twitter.com##a[href*="/i/topics"]
-
-! ===================================================================
-! 3. SOL MENÜ TEMİZLİĞİ (Sadece Profil, Kaydedilenler, Ayarlar, Çıkış)
-! ===================================================================
-x.com##a[data-testid="AppTabBar_Grok_Link"]
-twitter.com##a[data-testid="AppTabBar_Grok_Link"]
-x.com##a[href="/i/grok"]
-twitter.com##a[href="/i/grok"]
 x.com##a[data-testid="AppTabBar_Premium_Link"]
 twitter.com##a[data-testid="AppTabBar_Premium_Link"]
-x.com##a[href*="/communities"]
-twitter.com##a[href*="/communities"]
+x.com##a[href*="/premium"]
+twitter.com##a[href*="/premium"]
+x.com##a[href*="/creator-studio"]
+twitter.com##a[href*="/creator-studio"]
+x.com##a[href*="/analytics"]
+twitter.com##a[href*="/analytics"]
+x.com##a[href*="ads.twitter.com"]
+twitter.com##a[href*="ads.twitter.com"]
+x.com##a[data-testid="AppTabBar_Grok_Link"]
+twitter.com##a[data-testid="AppTabBar_Grok_Link"]
 
 ! ===================================================================
-! 4. SPONSORLU (REKLAM) TWEETLERİ GİZLE
+! 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE
 ! ===================================================================
 x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
@@ -321,19 +306,18 @@ twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 }
 
 function generateReadmeMd(options: ConfigOptions): string {
-  return `# 🚫 Twitter/X Konuları Özelleştir & Tabbar Temizleme Kodu (Brave Browser)
+  return `# 🚫 Twitter/X + İkonu Satırını & Premium/Reklamları Kaldırma Kodu (Brave Browser)
 
-Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) üzerindeki **"Konuları Özelleştir"** tabbarını, **"Sana Özel"** sekme barını, **+ (Artı)** ikonunu ve sol menüdeki kalabalığı tamamen kaldıran filtre ve eklenti paketi.
+Brave Browser kullanıcıları için Twitter/X (\`x.com\` & \`twitter.com\`) üzerindeki **+ ikonlu sekme satırını** tamamen kaldıran, sol menüdeki **Premium**, **İçerik Stüdyosu** ve **Reklamlar** butonlarını gizleyen eklenti ve Brave Shields kuralları.
 
 ---
 
 ## 🚀 Özellikler
 
-- ✅ **Konuları Özelleştir Tabbarını Kaldırır:** Akışta beliren konu önerilerini gizler.
-- ✅ **Sade Sol Menü:** Sol tarafta **SADECE** Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır.
-- ✅ **Üst Abone Ol Butonunu Kaldırır:** Reklam tekliflerini gizler.
-- ✅ **+ İkonlu Tabbarı Kaldırır:** Sekme barını ve + ikonunu siler.
+- ✅ **Üst + İkonu ve Satırını Kaldırır:** Üst sekme barını ve sağındaki + buton satırını yok eder.
+- ✅ **Sol Menü Temizliği:** Orijinal menüyü korur, sadece Premium, İçerik Stüdyosu ve Reklamlar butonlarını gizler.
 - ✅ **Sponsorlu Tweet Temizliği:** Akıştaki reklam gönderilerini kaldırır.
+- ✅ **Brave Shields Uyumlu:** Eklentisiz \`brave://adblock\` içerik filtreleme kuralı.
 
 ---
 

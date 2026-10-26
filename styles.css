@@ -1,8 +1,9 @@
-/* Twitter/X Minimalist Layout - Anti-Flicker CSS for Brave Browser */
+/* Twitter/X Clean Layout - Anti-Flicker CSS for Brave Browser */
 
-/* 1. ÜST TABBAR, + İKONU VE ABONE OL BUTONUNU KALDIR */
-div:has(> div[role="tablist"]),
+/* 1. ÜST BARDAN + İKONUNU, SEKME SATIRINI VE ABONE OL BUTONUNU TAMAMEN KALDIR */
 div[role="tablist"],
+div:has(> div[role="tablist"]),
+div[data-testid="ScrollSnap-List"],
 a[href*="premium_tier_upsell"],
 a[href*="subscribe"],
 a[href*="/settings/timeline"],
@@ -13,26 +14,26 @@ div[aria-label*="Pin"] {
   display: none !important;
 }
 
-/* 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ KALDIR */
-div[aria-label*="Konuları özelleştir"],
-div[aria-label*="Customize topics"],
-div[aria-label*="Konular"],
-div[aria-label*="Topics"],
-div[data-testid="topicsModule"],
-div[data-testid="TopicToFollow"],
-a[href*="/i/topics"],
-a[href*="/settings/topics"] {
+/* 2. SOL MENÜDEN SADECE PREMIUM, İÇERİK STÜDYOSU (CREATOR STUDIO), REKLAMLAR VE GROK KALDIR */
+a[data-testid="AppTabBar_Premium_Link"],
+a[href*="/premium"],
+a[href*="/creator-studio"],
+a[href*="/analytics"],
+a[href*="ads.twitter.com"],
+a[href*="/ads"],
+a[data-testid="AppTabBar_Grok_Link"],
+a[href="/i/grok"],
+a[href*="/verified-orgs"],
+a[href*="/i/jobs"] {
   display: none !important;
 }
 
-/* 3. SOL MENÜDEN GEREKSİZ ELEMANLARI (Grok, Premium, Keşfet, Topluluklar vb.) KALDIR */
-a[data-testid="AppTabBar_Grok_Link"],
-a[href="/i/grok"],
-a[data-testid="AppTabBar_Premium_Link"],
-a[href*="/premium"],
-a[href*="/communities"],
-a[href*="/verified-orgs"],
-a[href*="/i/jobs"] {
+/* 3. "KONULARI ÖZELLEŞTİR" TABBAR VE MODÜLLERİNİ KALDIR */
+div[aria-label*="Konuları özelleştir"],
+div[aria-label*="Customize topics"],
+div[data-testid="topicsModule"],
+div[data-testid="TopicToFollow"],
+a[href*="/i/topics"] {
   display: none !important;
 }
 

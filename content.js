@@ -1,62 +1,52 @@
 /**
- * Twitter/X Minimalist Layout:
- * 1. Sol Menüde SADECE: Profil, Kaydedilenler, Ayarlar, Çıkış bırakılır.
- * 2. Üst "Abone Ol" / "Subscribe" butonu kaldırılır.
- * 3. Üst + ikonu ve sekme barı kaldırılır.
- * 4. "Konuları Özelleştir" (Customize Topics) tabbarı ve modülleri kaldırılır.
+ * Twitter/X Clean Layout & Remove Plus Row
+ * 1. Üst bardaki sağ taraftaki + ikonu ve o sekme satırını tamamen kaldırır.
+ * 2. Sol menüyü orijinal tutar; Sadece Premium, İçerik Stüdyosu ve Reklamları gizler.
+ * 3. Sponsorlu reklam tweetlerini temizler.
  * https://github.com/
  */
 
 (function () {
   'use strict';
 
-  console.log('[X-Minimal-Brave] Betik aktif: Konuları özelleştir tabbarı temizleniyor.');
+  console.log('[X-Clean-Brave] Betik aktif: + ikonu satırı ve reklamlar temizleniyor.');
 
   function cleanupUI() {
-    // 1. Üst Sekme Barını (Tabbar) ve Yanındaki + İkonunu Kaldır
-    const tabList = document.querySelector('div[role="tablist"]');
-    if (tabList) {
-      const parentRow = tabList.parentElement;
-      if (parentRow && parentRow.tagName !== 'BODY') {
-        parentRow.style.display = 'none';
-      } else {
-        tabList.style.display = 'none';
+    // 1. Üst Sekme Barını, Sağdaki + İkonunu ve O Satırı Tamamen Yok Et
+    const tabLists = document.querySelectorAll('div[role="tablist"], div[data-testid="ScrollSnap-List"]');
+    tabLists.forEach(tabList => {
+      tabList.style.display = 'none';
+      if (tabList.parentElement && tabList.parentElement.tagName !== 'BODY') {
+        tabList.parentElement.style.display = 'none';
       }
-    }
-
-    // 2. Üst "Abone Ol" / "Subscribe" Butonunu ve + Ayarlar İkonunu Kaldır
-    const subscribeAndPlusBtns = document.querySelectorAll(
-      'a[href*="premium_tier_upsell"], a[href*="subscribe"], a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"]'
-    );
-    subscribeAndPlusBtns.forEach(btn => {
-      btn.style.display = 'none';
     });
 
-    // 3. "Konuları Özelleştir" (Customize Topics) Tabbarını ve Modüllerini Kaldır
+    const plusAndSettingsRow = document.querySelectorAll(
+      'a[href*="/settings/timeline"], div[aria-label*="Timeline"], div[aria-label*="Zaman akışı"], div[aria-label*="Özel akış"], div[aria-label*="Pin"], a[href*="premium_tier_upsell"], a[href*="subscribe"]'
+    );
+    plusAndSettingsRow.forEach(el => {
+      el.style.display = 'none';
+      const parentContainer = el.closest('div[style*="sticky"] > div:nth-child(2)');
+      if (parentContainer) parentContainer.style.display = 'none';
+    });
+
+    // 2. Sol Menü: Orijinal menüyü koru; SADECE Premium, İçerik Stüdyosu, Reklamlar ve Grok kaldır
+    const itemsToHideInMenu = document.querySelectorAll(
+      'a[data-testid="AppTabBar_Premium_Link"], a[href*="/premium"], a[href*="/creator-studio"], a[href*="/analytics"], a[href*="ads.twitter.com"], a[href*="/ads"], a[data-testid="AppTabBar_Grok_Link"], a[href="/i/grok"], a[href*="/verified-orgs"], a[href*="/i/jobs"]'
+    );
+    itemsToHideInMenu.forEach(item => {
+      item.style.display = 'none';
+    });
+
+    // 3. Konuları Özelleştir Tabbarı ve Modüllerini Kaldır
     const topicElements = document.querySelectorAll(
-      'div[aria-label*="Konuları özelleştir"], div[aria-label*="Customize topics"], div[data-testid="topicsModule"], div[data-testid="TopicToFollow"], a[href*="/i/topics"], a[href*="/settings/topics"]'
+      'div[aria-label*="Konuları özelleştir"], div[aria-label*="Customize topics"], div[data-testid="topicsModule"], div[data-testid="TopicToFollow"], a[href*="/i/topics"]'
     );
     topicElements.forEach(el => {
       el.style.display = 'none';
     });
 
-    // 4. Sol Menüyü Sadeleştir: SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırak
-    const navLinks = document.querySelectorAll('nav[role="navigation"] a');
-    navLinks.forEach(link => {
-      const href = (link.getAttribute('href') || '').toLowerCase();
-      
-      const isHome = href === '/home' || href === '/';
-      const isBookmarks = href.includes('/bookmarks');
-      const isSettings = href.includes('/settings');
-      const isProfile = link.getAttribute('data-testid') === 'AppTabBar_Profile_Link' || 
-                        (!href.includes('/i/') && !href.includes('/explore') && !href.includes('/notifications') && !href.includes('/messages') && href.length > 1);
-
-      if (!isHome && !isBookmarks && !isSettings && !isProfile) {
-        link.style.display = 'none';
-      }
-    });
-
-    // 5. Sponsorlu / Reklam Tweetlerini Gizle
+    // 4. Sponsorlu / Reklam Tweetlerini Gizle
     const articles = document.querySelectorAll('article');
     articles.forEach(article => {
       const isPromoted = article.querySelector('a[href*="/quick_promote"]') ||

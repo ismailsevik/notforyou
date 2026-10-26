@@ -1,51 +1,45 @@
-! Title: Twitter/X Konuları Özelleştir & Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
-! Description: "Konuları Özelleştir" tabbarını, üst sekme barını, Abone Ol butonunu ve sol menüdeki fazlalıkları kaldırır.
+! Title: Twitter/X + İkonu Satırını & Premium/İçerik Stüdyosu/Reklamları Kaldırma - Brave Shields Filtresi
+! Description: Üst bardaki + ikonunu ve satırını kaldırır. Sol menüden Premium, İçerik Stüdyosu ve Reklamları gizler.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! 1. ÜST ABONE OL BUTONU, TABBAR VE + İKONUNU KALDIR
+! 1. ÜST BARDAN + İKONUNU, SEKME SATIRINI VE ABONE OL BUTONUNU KALDIR
 ! ===================================================================
 x.com##div:has(> div[role="tablist"])
 twitter.com##div:has(> div[role="tablist"])
 x.com##div[role="tablist"]
 twitter.com##div[role="tablist"]
-x.com##a[href*="premium_tier_upsell"]
-twitter.com##a[href*="premium_tier_upsell"]
-x.com##a[href*="subscribe"]
-twitter.com##a[href*="subscribe"]
+x.com##div[data-testid="ScrollSnap-List"]
+twitter.com##div[data-testid="ScrollSnap-List"]
 x.com##a[href*="/settings/timeline"]
 twitter.com##a[href*="/settings/timeline"]
+x.com##div[aria-label*="Timeline"]
+twitter.com##div[aria-label*="Timeline"]
+x.com##div[aria-label*="Zaman akışı"]
+twitter.com##div[aria-label*="Zaman akışı"]
+x.com##a[href*="premium_tier_upsell"]
+twitter.com##a[href*="premium_tier_upsell"]
 
 ! ===================================================================
-! 2. "KONULARI ÖZELLEŞTİR" (CUSTOMIZE TOPICS) TABBAR VE MODÜLLERİNİ GİZLE
+! 2. SOL MENÜ TEMİZLİĞİ (Sadece Premium, İçerik Stüdyosu, Reklamlar ve Grok Gizle)
 ! ===================================================================
-x.com##div[aria-label*="Konuları özelleştir"]
-twitter.com##div[aria-label*="Konuları özelleştir"]
-x.com##div[aria-label*="Customize topics"]
-twitter.com##div[aria-label*="Customize topics"]
-x.com##div[data-testid="topicsModule"]
-twitter.com##div[data-testid="topicsModule"]
-x.com##div[data-testid="TopicToFollow"]
-twitter.com##div[data-testid="TopicToFollow"]
-x.com##a[href*="/i/topics"]
-twitter.com##a[href*="/i/topics"]
-
-! ===================================================================
-! 3. SOL MENÜ TEMİZLİĞİ (Sadece Profil, Kaydedilenler, Ayarlar, Çıkış)
-! ===================================================================
-x.com##a[data-testid="AppTabBar_Grok_Link"]
-twitter.com##a[data-testid="AppTabBar_Grok_Link"]
-x.com##a[href="/i/grok"]
-twitter.com##a[href="/i/grok"]
 x.com##a[data-testid="AppTabBar_Premium_Link"]
 twitter.com##a[data-testid="AppTabBar_Premium_Link"]
-x.com##a[href*="/communities"]
-twitter.com##a[href*="/communities"]
+x.com##a[href*="/premium"]
+twitter.com##a[href*="/premium"]
+x.com##a[href*="/creator-studio"]
+twitter.com##a[href*="/creator-studio"]
+x.com##a[href*="/analytics"]
+twitter.com##a[href*="/analytics"]
+x.com##a[href*="ads.twitter.com"]
+twitter.com##a[href*="ads.twitter.com"]
+x.com##a[data-testid="AppTabBar_Grok_Link"]
+twitter.com##a[data-testid="AppTabBar_Grok_Link"]
 
 ! ===================================================================
-! 4. SPONSORLU (REKLAM) TWEETLERİ GİZLE
+! 3. SPONSORLU (REKLAM) TWEETLERİ GİZLE
 ! ===================================================================
 x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
 twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
