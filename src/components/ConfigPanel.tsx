@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigOptions } from '../types';
-import { Sliders, Sparkles } from 'lucide-react';
+import { Sliders, Sparkles, MegaphoneOff } from 'lucide-react';
 
 interface ConfigPanelProps {
   options: ConfigOptions;
@@ -33,10 +33,10 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         
-        {/* NEW PRIMARY OPTION: Classic Twitter Look (Hide Entire Tab Bar) */}
+        {/* Main Option: Classic Twitter Look (Hide Entire Tab Bar & + Icon) */}
         <div
           onClick={() => toggleOption('hideEntireTablist')}
-          className={`p-4 rounded-lg border cursor-pointer transition-all col-span-1 md:col-span-2 lg:col-span-3 ${
+          className={`p-4 rounded-lg border cursor-pointer transition-all ${
             options.hideEntireTablist
               ? 'bg-gradient-to-r from-orange-950/60 via-amber-950/30 to-slate-950 border-orange-500 text-white shadow-lg shadow-orange-950/20'
               : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
@@ -45,41 +45,39 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
           <div className="flex items-start justify-between">
             <div className="font-bold text-sm mb-1 text-white flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Eski Twitter Görünümü (Her İki Sekmeyi ve Üst Barı Tamamen Kaldır)</span>
-              <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
-                KULLANICI İSTEĞİ
-              </span>
+              <span>Sekme Barını & + İkonunu Gizle</span>
             </div>
             <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideEntireTablist ? 'bg-orange-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-600'}`}>
               ✓
             </div>
           </div>
           <p className="text-xs text-slate-300 leading-relaxed mt-1">
-            Hem "Sana Özel" hem de "Takip Edilenler" sekmelerini üstten tamamen siler. Twitter/X ana sayfasını tıpkı <strong>eski klasik Twitter</strong> tasarımında olduğu gibi sekmesiz, sade ve temiz bir akışa dönüştürür.
+            "Sana Özel", "Takip Edilenler" sekmelerini ve yanındaki + / ayarlar butonunu üstten tamamen siler.
           </p>
         </div>
 
-        {/* Option: Hide For You only */}
-        {!options.hideEntireTablist && (
-          <div
-            onClick={() => toggleOption('hideForYou')}
-            className={`p-4 rounded-lg border cursor-pointer transition-all ${
-              options.hideForYou
-                ? 'bg-orange-950/30 border-orange-500/60 text-white'
-                : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
-            }`}
-          >
-            <div className="flex items-start justify-between">
-              <div className="font-semibold text-sm mb-1 text-slate-100">"Sana Özel" Sekmesini Gizle</div>
-              <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideForYou ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
-                ✓
-              </div>
+        {/* NEW OPTION: Hide Promoted / Sponsored Tweets */}
+        <div
+          onClick={() => toggleOption('hidePromotedTweets')}
+          className={`p-4 rounded-lg border cursor-pointer transition-all ${
+            options.hidePromotedTweets
+              ? 'bg-gradient-to-r from-emerald-950/60 via-slate-950 to-slate-950 border-emerald-500 text-white shadow-lg shadow-emerald-950/20'
+              : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
+          }`}
+        >
+          <div className="flex items-start justify-between">
+            <div className="font-bold text-sm mb-1 text-white flex items-center gap-2">
+              <MegaphoneOff className="w-4 h-4 text-emerald-400" />
+              <span>Sponsorlu / Reklam Tweetleri Gizle</span>
             </div>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Yalnızca algoritma tabanlı "Sana Özel" (For You) sekmesini gizler.
-            </p>
+            <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hidePromotedTweets ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-600'}`}>
+              ✓
+            </div>
           </div>
-        )}
+          <p className="text-xs text-slate-300 leading-relaxed mt-1">
+            Akıştaki tüm "Sponsorlu" (Promoted) reklam tweetlerini CSS ve DOM filtresi ile temizler.
+          </p>
+        </div>
 
         {/* Option: Grok */}
         <div

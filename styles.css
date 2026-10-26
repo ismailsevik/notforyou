@@ -1,12 +1,20 @@
-/* Twitter/X Classic Look - Remove Tabbar & Plus Icon */
+/* Twitter/X Classic Look - Remove Tabbar, Plus Icon & Promoted Tweets */
 
-/* Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */
+/* 1. Sekme barını ve yanındaki + ikonunu içeren tüm üst şeridi gizle */
 div:has(> div[role="tablist"]),
 div[role="tablist"],
 a[href*="/settings/timeline"],
 div[aria-label*="Timeline settings"],
 div[aria-label*="Zaman akışı"],
 div[aria-label*="Özel akış"] {
+  display: none !important;
+}
+
+/* 2. Sponsorlu / Reklam Tweetlerini Gizle (Promoted Tweets) */
+article:has(span:has-text("Sponsorlu")),
+article:has(span:has-text("Promoted")),
+article:has(a[href*="/quick_promote"]),
+div[data-testid="placementTracking"] {
   display: none !important;
 }
 

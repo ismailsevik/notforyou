@@ -1,11 +1,11 @@
-! Title: Twitter/X Tabbar ve + İkonunu Kaldırma - Brave Shields Filtre Listesi
+! Title: Twitter/X Tabbar, + İkonu ve Sponsorlu Reklamları Kaldırma - Brave Shields Filtre Listesi
 ! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme kuralları.
 ! Homepage: https://github.com/
 ! License: MIT
 !
 
 ! ===================================================================
-! TABBAR VE YANINDAKİ + İKONU DAHİL TÜM ÜST ŞERİDİ GİZLE
+! 1. TABBAR VE YANINDAKİ + İKONU DAHİL TÜM ÜST ŞERİDİ GİZLE
 ! ===================================================================
 x.com##div:has(> div[role="tablist"])
 twitter.com##div:has(> div[role="tablist"])
@@ -19,7 +19,17 @@ x.com##div[aria-label*="Zaman akışı"]
 twitter.com##div[aria-label*="Zaman akışı"]
 
 ! ===================================================================
-! GROK AI VE PREMIUM SEKMELERİNİ GİZLE
+! 2. SPONSORLU / REKLAM TWEETLERİNİ GİZLE (PROMOTED TWEETS)
+! ===================================================================
+x.com##article:has(span:has-text(/Sponsorlu|Promoted/))
+twitter.com##article:has(span:has-text(/Sponsorlu|Promoted/))
+x.com##div[data-testid="placementTracking"]
+twitter.com##div[data-testid="placementTracking"]
+x.com##article:has(a[href*="/quick_promote"])
+twitter.com##article:has(a[href*="/quick_promote"])
+
+! ===================================================================
+! 3. GROK AI VE PREMIUM SEKMELERİNİ GİZLE
 ! ===================================================================
 x.com##a[data-testid="AppTabBar_Grok_Link"]
 twitter.com##a[data-testid="AppTabBar_Grok_Link"]
@@ -32,7 +42,7 @@ x.com##a[href="/i/premium_tier_upsell"]
 twitter.com##a[href="/i/premium_tier_upsell"]
 
 ! ===================================================================
-! "KİMİ TAKİP ETMELİ" MODÜLÜNÜ GİZLE
+! 4. "KİMİ TAKİP ETMELİ" MODÜLÜNÜ GİZLE
 ! ===================================================================
 x.com##aside[aria-label*="Takip"]
 twitter.com##aside[aria-label*="Takip"]
