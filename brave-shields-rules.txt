@@ -1,4 +1,4 @@
-! Title: Twitter/X Sadeleştirilmiş Görünüm - Brave Shields Filtre Listesi
+! Title: NotForYou 
 ! Description: Sol menüde SADECE Profil, Kaydedilenler, Ayarlar ve Çıkış bırakır. Üst Abone Ol butonunu ve + tabbarını kaldırır.
 ! Homepage: https://github.com/
 ! License: MIT
