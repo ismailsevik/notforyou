@@ -1,32 +1,32 @@
-! Title: Twitter/X "Sana Özel" (For You) Sekmesini Gizleme - Brave Shields Filtre Listesi
-! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme (Cosmetic Filtering) kuralları.
+! Title: Eski Twitter Görünümü - Brave Shields Filtre Listesi
+! Description: Brave Browser dahili reklam engelleyicisi (brave://adblock) için %100 içerik filtreleme kuralları.
 ! Homepage: https://github.com/
 ! License: MIT
-! Update Frequency: 7 days
 !
 
 ! ===================================================================
-! TWITTER / X "SANA ÖZEL" (FOR YOU) SEKMESİNİ İÇERİK FİLTRELEME İLE GİZLE
+! ESKİ TWITTER GÖRÜNÜMÜ: ÜST SEKME BARINI ("SANA ÖZEL" & "TAKİP EDİLENLER") TAMAMEN KALDIR
 ! ===================================================================
-x.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You|Für dich|Pour vous|Para ti|おすすめ/)
-twitter.com##div[role="tablist"] a[role="tab"]:has-text(/Sana Özel|For You|Für dich|Pour vous|Para ti|おすすめ/)
-
-x.com##div[role="tablist"] > div[role="presentation"]:has(a[role="tab"]:has-text(/Sana Özel|For You/))
-twitter.com##div[role="tablist"] > div[role="presentation"]:has(a[role="tab"]:has-text(/Sana Özel|For You/))
-
-x.com##div[role="tablist"] > div[role="presentation"]:first-child
-twitter.com##div[role="tablist"] > div[role="presentation"]:first-child
-x.com##div[role="tablist"] a[href="/home"][role="tab"]:first-child
-twitter.com##div[role="tablist"] a[href="/home"][role="tab"]:first-child
+x.com##div[role="tablist"]
+twitter.com##div[role="tablist"]
 
 ! ===================================================================
 ! GROK AI VE PREMIUM SEKMELERİNİ GİZLE
 ! ===================================================================
 x.com##a[data-testid="AppTabBar_Grok_Link"]
 twitter.com##a[data-testid="AppTabBar_Grok_Link"]
+x.com##a[href="/i/grok"]
+twitter.com##a[href="/i/grok"]
 
 x.com##a[data-testid="AppTabBar_Premium_Link"]
 twitter.com##a[data-testid="AppTabBar_Premium_Link"]
+x.com##a[href="/i/premium_tier_upsell"]
+twitter.com##a[href="/i/premium_tier_upsell"]
 
+! ===================================================================
+! "KİMİ TAKİP ETMELİ" MODÜLÜNÜ GİZLE
+! ===================================================================
 x.com##aside[aria-label*="Takip"]
 twitter.com##aside[aria-label*="Takip"]
+x.com##aside[aria-label*="Who to follow"]
+twitter.com##aside[aria-label*="Who to follow"]

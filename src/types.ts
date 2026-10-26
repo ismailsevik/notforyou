@@ -1,6 +1,7 @@
 export interface ConfigOptions {
   hideForYou: boolean;
   autoSwitchToFollowing: boolean;
+  hideEntireTablist: boolean; // Classic Twitter look (hides both tabs)
   hideGrok: boolean;
   hidePremium: boolean;
   hideSidebarTrends: boolean;

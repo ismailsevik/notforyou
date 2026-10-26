@@ -1,6 +1,6 @@
 import React from 'react';
 import { ConfigOptions } from '../types';
-import { Sliders, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Sliders, Sparkles } from 'lucide-react';
 
 interface ConfigPanelProps {
   options: ConfigOptions;
@@ -32,51 +32,56 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Main Option 1: Hide For You */}
+        
+        {/* NEW PRIMARY OPTION: Classic Twitter Look (Hide Entire Tab Bar) */}
         <div
-          onClick={() => toggleOption('hideForYou')}
-          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-            options.hideForYou
-              ? 'bg-orange-950/30 border-orange-500/60 text-white'
+          onClick={() => toggleOption('hideEntireTablist')}
+          className={`p-4 rounded-lg border cursor-pointer transition-all col-span-1 md:col-span-2 lg:col-span-3 ${
+            options.hideEntireTablist
+              ? 'bg-gradient-to-r from-orange-950/60 via-amber-950/30 to-slate-950 border-orange-500 text-white shadow-lg shadow-orange-950/20'
               : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
           }`}
         >
           <div className="flex items-start justify-between">
-            <div className="font-semibold text-sm mb-1 text-slate-100 flex items-center gap-2">
-              <span>"Sana Özel" Sekmesini Gizle</span>
+            <div className="font-bold text-sm mb-1 text-white flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              <span>Eski Twitter Görünümü (Her İki Sekmeyi ve Üst Barı Tamamen Kaldır)</span>
+              <span className="text-[10px] font-mono bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+                KULLANICI İSTEĞİ
+              </span>
             </div>
-            <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideForYou ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
+            <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideEntireTablist ? 'bg-orange-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-600'}`}>
               ✓
             </div>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Twitter/X üst barındaki algoritma tabanlı "Sana Özel" (For You) sekmesini tamamen gizler.
+          <p className="text-xs text-slate-300 leading-relaxed mt-1">
+            Hem "Sana Özel" hem de "Takip Edilenler" sekmelerini üstten tamamen siler. Twitter/X ana sayfasını tıpkı <strong>eski klasik Twitter</strong> tasarımında olduğu gibi sekmesiz, sade ve temiz bir akışa dönüştürür.
           </p>
         </div>
 
-        {/* Option 2: Auto switch to Following */}
-        <div
-          onClick={() => toggleOption('autoSwitchToFollowing')}
-          className={`p-4 rounded-lg border cursor-pointer transition-all ${
-            options.autoSwitchToFollowing
-              ? 'bg-orange-950/30 border-orange-500/60 text-white'
-              : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
-          }`}
-        >
-          <div className="flex items-start justify-between">
-            <div className="font-semibold text-sm mb-1 text-slate-100 flex items-center gap-2">
-              <span>Otomatik "Takip Edilenler" Sekmesine Geç</span>
+        {/* Option: Hide For You only */}
+        {!options.hideEntireTablist && (
+          <div
+            onClick={() => toggleOption('hideForYou')}
+            className={`p-4 rounded-lg border cursor-pointer transition-all ${
+              options.hideForYou
+                ? 'bg-orange-950/30 border-orange-500/60 text-white'
+                : 'bg-slate-950/50 border-slate-800 text-slate-400 hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-start justify-between">
+              <div className="font-semibold text-sm mb-1 text-slate-100">"Sana Özel" Sekmesini Gizle</div>
+              <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideForYou ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
+                ✓
+              </div>
             </div>
-            <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.autoSwitchToFollowing ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
-              ✓
-            </div>
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Yalnızca algoritma tabanlı "Sana Özel" (For You) sekmesini gizler.
+            </p>
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed">
-            Sayfa ilk açıldığında doğrudan "Takip Edilenler" akışına tıklar ve yönlendirir.
-          </p>
-        </div>
+        )}
 
-        {/* Option 3: Hide Grok */}
+        {/* Option: Grok */}
         <div
           onClick={() => toggleOption('hideGrok')}
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
@@ -86,19 +91,17 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
           }`}
         >
           <div className="flex items-start justify-between">
-            <div className="font-semibold text-sm mb-1 text-slate-100 flex items-center gap-2">
-              <span>Grok AI Sekmesini Gizle</span>
-            </div>
+            <div className="font-semibold text-sm mb-1 text-slate-100">Grok AI Sekmesini Gizle</div>
             <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideGrok ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
               ✓
             </div>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Sol navigasyon menüsündeki "Grok" bağlantısını ve sekmesini kaldırır.
+            Sol menüdeki "Grok" bağlantısını ve sekmesini kaldırır.
           </p>
         </div>
 
-        {/* Option 4: Hide Premium */}
+        {/* Option: Premium */}
         <div
           onClick={() => toggleOption('hidePremium')}
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
@@ -108,19 +111,17 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
           }`}
         >
           <div className="flex items-start justify-between">
-            <div className="font-semibold text-sm mb-1 text-slate-100 flex items-center gap-2">
-              <span>Premium & Abone Ol Butonlarını Gizle</span>
-            </div>
+            <div className="font-semibold text-sm mb-1 text-slate-100">Premium Butonlarını Gizle</div>
             <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hidePremium ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
               ✓
             </div>
           </div>
           <p className="text-xs text-slate-400 leading-relaxed">
-            Sol menüdeki "Premium" ve rozet alma tekliflerini tamamen gizler.
+            Sol menüdeki "Premium" ve reklam butonlarını gizler.
           </p>
         </div>
 
-        {/* Option 5: Hide Who to follow */}
+        {/* Option: Who to follow */}
         <div
           onClick={() => toggleOption('hideWhoToFollow')}
           className={`p-4 rounded-lg border cursor-pointer transition-all ${
@@ -130,9 +131,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
           }`}
         >
           <div className="flex items-start justify-between">
-            <div className="font-semibold text-sm mb-1 text-slate-100 flex items-center gap-2">
-              <span>"Kimi Takip Etmeli" Kartını Gizle</span>
-            </div>
+            <div className="font-semibold text-sm mb-1 text-slate-100">"Kimi Takip Etmeli" Kartını Gizle</div>
             <div className={`w-5 h-5 rounded-md flex items-center justify-center text-xs ${options.hideWhoToFollow ? 'bg-orange-500 text-slate-950' : 'bg-slate-800 text-slate-600'}`}>
               ✓
             </div>
@@ -142,19 +141,6 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ options, onChangeOptio
           </p>
         </div>
 
-        {/* Option 6: Multi-language Support */}
-        <div className="p-4 rounded-lg border bg-slate-950/50 border-slate-800 text-slate-400">
-          <div className="flex items-start justify-between mb-1">
-            <span className="font-semibold text-sm text-slate-100">Çoklu Dil Desteği</span>
-            <span className="text-[10px] font-mono bg-slate-800 text-orange-400 px-2 py-0.5 rounded">Otomatik</span>
-          </div>
-          <p className="text-xs text-slate-400 leading-relaxed mb-2">
-            "Sana Özel", "For You", "Für dich", "Pour vous", "Para ti" gibi tüm dilleri kapsar.
-          </p>
-          <div className="flex flex-wrap gap-1 text-[11px] font-mono text-slate-500">
-            <span>TR</span> · <span>EN</span> · <span>DE</span> · <span>FR</span> · <span>ES</span> · <span>JA</span>
-          </div>
-        </div>
       </div>
     </div>
   );

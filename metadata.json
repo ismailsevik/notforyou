@@ -2,5 +2,7 @@
   "name": "Brave Browser Twitter/X For You Tab Hider Generator",
   "description": "Brave Browser ve GitHub için Twitter/X 'Sana Özel' (For You) sekmesini gizleyen tam kapsamlı eklenti, UserScript ve Brave Shields kural jeneratörü.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

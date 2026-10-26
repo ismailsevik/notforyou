@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ConfigOptions } from '../types';
-import { Eye, EyeOff, Sparkles, Home, Search, Bell, Mail, Bookmark, User, Bot, Award, TrendingUp, RefreshCw, CheckCircle } from 'lucide-react';
+import { Eye, EyeOff, Home, Search, Bell, User, Bot, Award, Sparkles } from 'lucide-react';
 
 interface TwitterSimulatorProps {
   options: ConfigOptions;
@@ -10,8 +10,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
   const [extensionEnabled, setExtensionEnabled] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'foryou' | 'following'>('following');
 
-  // Handle active tab behavior when script is enabled
-  const currentActiveTab = extensionEnabled && options.hideForYou && options.autoSwitchToFollowing ? 'following' : activeTab;
+  const showEntireTablist = !extensionEnabled || !options.hideEntireTablist;
 
   return (
     <div id="simulator" className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
@@ -37,12 +36,14 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             {extensionEnabled ? (
               <>
                 <EyeOff className="w-3.5 h-3.5" />
-                <span>Eklenti AKTİF (Sekme Gizlendi)</span>
+                <span>
+                  {options.hideEntireTablist ? 'Eski Twitter Görünümü (Aktif)' : 'Eklenti AKTİF (Sekme Gizlendi)'}
+                </span>
               </>
             ) : (
               <>
                 <Eye className="w-3.5 h-3.5" />
-                <span>Varsayılan Twitter (Orijinal Görünüm)</span>
+                <span>Orijinal Yeni Twitter Görünümü</span>
               </>
             )}
           </button>
@@ -51,18 +52,15 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
 
       {/* Twitter App View Mockup */}
       <div className="bg-black text-slate-100 min-h-[500px] flex justify-center text-sm font-sans">
-        {/* Twitter Main Container */}
         <div className="w-full max-w-5xl flex border-x border-slate-800 min-h-[500px]">
           
           {/* Left Navigation Bar */}
           <div className="w-16 sm:w-60 border-r border-slate-800 p-3 flex flex-col justify-between shrink-0">
             <div className="space-y-2">
-              {/* Logo */}
               <div className="p-2 text-white font-bold text-xl hover:bg-slate-900 rounded-full w-fit">
                 𝕏
               </div>
 
-              {/* Nav Items */}
               <nav className="space-y-1">
                 <div className="flex items-center gap-4 p-3 font-bold hover:bg-slate-900 rounded-full text-white cursor-pointer">
                   <Home className="w-6 h-6" />
@@ -79,7 +77,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
 
                 {/* Grok Item */}
                 {(!extensionEnabled || !options.hideGrok) ? (
-                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer transition-all">
+                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
                     <Bot className="w-6 h-6 text-sky-400" />
                     <span className="hidden sm:inline">Grok</span>
                   </div>
@@ -91,7 +89,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
 
                 {/* Premium Item */}
                 {(!extensionEnabled || !options.hidePremium) ? (
-                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer transition-all">
+                  <div className="flex items-center gap-4 p-3 hover:bg-slate-900 rounded-full text-slate-400 hover:text-white cursor-pointer">
                     <Award className="w-6 h-6 text-amber-400" />
                     <span className="hidden sm:inline">Premium</span>
                   </div>
@@ -122,62 +120,67 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
           {/* Central Feed Section */}
           <div className="flex-1 min-w-0 border-r border-slate-800 flex flex-col">
             
-            {/* Feed Header Tabs */}
+            {/* Feed Header */}
             <div className="sticky top-0 bg-black/80 backdrop-blur-md border-b border-slate-800 z-10">
-              <div className="px-4 py-3 font-bold text-lg">Anasayfa</div>
+              <div className="px-4 py-3 font-bold text-lg flex items-center justify-between">
+                <span>Anasayfa</span>
+                {extensionEnabled && options.hideEntireTablist && (
+                  <span className="text-xs font-mono text-amber-400 bg-amber-950/60 border border-amber-700/50 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    Eski Twitter Görünümü
+                  </span>
+                )}
+              </div>
 
-              {/* Tabs list */}
-              <div className="flex border-t border-slate-800/80 font-medium text-sm">
-                
-                {/* FOR YOU TAB */}
-                {(!extensionEnabled || !options.hideForYou) ? (
+              {/* TAB BAR HEADER: HIDE ENTIRELY IF CLASSIC LOOK IS ENABLED */}
+              {showEntireTablist ? (
+                <div className="flex border-t border-slate-800/80 font-medium text-sm">
+                  {(!extensionEnabled || !options.hideForYou) && (
+                    <button
+                      onClick={() => setActiveTab('foryou')}
+                      className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
+                        activeTab === 'foryou' ? 'text-white font-bold' : 'text-slate-500'
+                      }`}
+                    >
+                      <span>Sana Özel</span>
+                      {activeTab === 'foryou' && (
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+                      )}
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => setActiveTab('foryou')}
+                    onClick={() => setActiveTab('following')}
                     className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                      currentActiveTab === 'foryou' ? 'text-white font-bold' : 'text-slate-500'
+                      activeTab === 'following' || options.hideForYou ? 'text-white font-bold' : 'text-slate-500'
                     }`}
                   >
-                    <span>Sana Özel</span>
-                    {currentActiveTab === 'foryou' && (
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-sky-500 rounded-full" />
+                    <span>Takip Edilenler</span>
+                    {(activeTab === 'following' || options.hideForYou) && (
+                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-sky-500 rounded-full" />
                     )}
                   </button>
-                ) : (
-                  <div className="px-4 py-2 my-1 text-center font-mono text-xs text-orange-400 bg-orange-950/30 border border-orange-500/30 rounded flex items-center justify-center gap-2">
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span>"Sana Özel" (For You) Sekmesi Gizlendi</span>
-                  </div>
-                )}
-
-                {/* FOLLOWING TAB */}
-                <button
-                  onClick={() => setActiveTab('following')}
-                  className={`flex-1 py-3.5 text-center relative hover:bg-slate-900/50 transition-colors ${
-                    currentActiveTab === 'following' ? 'text-white font-bold' : 'text-slate-500'
-                  }`}
-                >
-                  <span>Takip Edilenler</span>
-                  {currentActiveTab === 'following' && (
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-sky-500 rounded-full" />
-                  )}
-                </button>
-              </div>
+                </div>
+              ) : (
+                <div className="px-4 py-2 bg-amber-950/20 border-t border-amber-900/30 text-center font-mono text-xs text-amber-300">
+                  ⚡ Üst sekme barı kaldırıldı ("Sana Özel" & "Takip Edilenler" sekmeleri gizli)
+                </div>
+              )}
             </div>
 
             {/* Feed Content */}
             <div className="divide-y divide-slate-800">
               
-              {/* Active Tab Notice */}
               <div className="p-3 bg-slate-950 text-xs text-slate-400 flex items-center justify-between border-b border-slate-800">
                 <div className="flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  <span>Şu Anki Akış: <strong>{currentActiveTab === 'following' ? 'Takip Edilenler (Kronolojik)' : 'Sana Özel (Algoritma Önerileri)'}</strong></span>
-                </div>
-                {extensionEnabled && options.hideForYou && (
-                  <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
-                    Algoritma Engellendi
+                  <span>
+                    Akış Modu: <strong>{extensionEnabled && options.hideEntireTablist ? 'Sade Klasik Akış (Sekmesiz)' : 'Sadece Takip Edilenler'}</strong>
                   </span>
-                )}
+                </div>
+                <span className="text-[11px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/50">
+                  Temiz Görünüm
+                </span>
               </div>
 
               {/* Tweet 1 */}
@@ -191,7 +194,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                     <span className="text-slate-500">@techbrave · 12dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    Brave Browser eklentimiz sayesinde Twitter/X 'Sana Özel' sekmesi olmadan %100 kronolojik ve temiz bir akış elde ediyoruz! 🚀
+                    Eski Twitter görünümü sayesinde artık üst tarafta gereksiz sekme barı ("Sana Özel" ve "Takip Edilenler") bulunmuyor! 🚀
                   </p>
                 </div>
               </div>
@@ -203,11 +206,11 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
                 </div>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="font-bold text-white">Open Source Software</span>
+                    <span className="font-bold text-white">Open Source Community</span>
                     <span className="text-slate-500">@oss_community · 45dk</span>
                   </div>
                   <p className="text-slate-200 text-sm leading-relaxed">
-                    GitHub üzerinde barındırabileceğiniz bu Manifest V3 eklentisi ve UserScript tüm dillerdeki "For You" başlıklarını algılıyor.
+                    Brave Shields kuralı veya eklenti ile Twitter/X ana sayfanızı tamamen sadeleştirebilirsiniz.
                   </p>
                 </div>
               </div>
@@ -215,16 +218,13 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
             </div>
           </div>
 
-          {/* Right Sidebar Section */}
+          {/* Right Sidebar */}
           <div className="hidden lg:block w-72 p-4 space-y-4 shrink-0">
-            
-            {/* Search */}
             <div className="bg-slate-900 rounded-full px-4 py-2.5 text-slate-400 text-xs flex items-center gap-3 border border-slate-800">
               <Search className="w-4 h-4 text-slate-500" />
               <span>Ara</span>
             </div>
 
-            {/* Who To Follow Sidebar */}
             {(!extensionEnabled || !options.hideWhoToFollow) ? (
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
                 <h3 className="font-bold text-white text-sm">Kimi Takip Etmeli</h3>
@@ -241,25 +241,7 @@ export const TwitterSimulator: React.FC<TwitterSimulatorProps> = ({ options }) =
               </div>
             ) : (
               <div className="p-3 text-[11px] font-mono text-orange-400/60 border border-dashed border-orange-500/20 rounded-xl">
-                [Kimi Takip Etmeli Modülü Eklenti Tarafından Gizlendi]
-              </div>
-            )}
-
-            {/* Trends Sidebar */}
-            {(!extensionEnabled || !options.hideSidebarTrends) ? (
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <h3 className="font-bold text-white text-sm">Gündemdekiler</h3>
-                <div className="space-y-2 text-xs">
-                  <div>
-                    <div className="text-slate-500 text-[10px]">Türkiye konumunda gündemde</div>
-                    <div className="font-bold text-white">#BraveBrowser</div>
-                    <div className="text-slate-500 text-[10px]">14,2 B gönderi</div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="p-3 text-[11px] font-mono text-orange-400/60 border border-dashed border-orange-500/20 rounded-xl">
-                [Gündemdekiler Modülü Gizlendi]
+                [Kimi Takip Etmeli Modülü Gizlendi]
               </div>
             )}
           </div>
